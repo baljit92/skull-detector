@@ -1,7 +1,7 @@
 # Web app to annotate/label training images
 
 ## Instructions to run
-There are two main scripts to this project, both in the `src/` folder. The following pre-requisites need to be satisified for the project to run:
+The following pre-requisites need to be satisified for the project to run:
 * Python 2.7
 * Django 1.11.2
 * pip
