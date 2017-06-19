@@ -17,15 +17,67 @@
 
 <div>
 	<canvas id="canvas" width="400" height="400"></canvas>
-	<input type="button" id="next" value="next"/>
-	<button id="save" onclick="save_canvas('save_image');"> save </button>
+	
+	<div id="uploaderForm">
+        <form enctype="multipart/form-data" action="{% url 'addImg' %}" method="post">
+			<input type="hidden" for="image_data" id="image_data" name="image_data" />
+			<input type="hidden" for="coords" id="rect_cords" name="rect_cords" value=""/>
+			<input type="hidden" for="image_name" id="image_name" name="image_name" />
+			{% if currentIndex != null %}
+				<input type="hidden" for="image_index" id="image_index" name="image_index" value={{currentIndex}}/>
+			{% endif %}
+			{% if currentIndex == null %}
+				<input type="hidden" for="image_index" id="image_index" name="image_index" value="0"/>
+			{% endif %}
+			<label for='caption'>Skull</label><input type="radio" name="isskull" value="Skull"/>
+  			<label for='caption'>Not Skull</label><input type="radio" name="isskull" value="Not Skull"/>
+		</form>
+
+		<div class="uploaderItem" id="uploaderSubmit">
+			<a href="#" onclick="addImage()">Save Image</a>
+			<input type="button" id="next" value="next"/>
+		</div>
+
+		<input type="button" id="btn_viewimg" value="View all annotated images"/>
+		<input type="button" id="btn_downloadimg" value="Download all annotated images"/>
+    </div>
 </div>
 
 <script>
  
 
+function addImage()
+{	
+	//validation of the form
+	var radioVal = $('input[name=isskull]:checked', '#uploaderForm > form').val()
+	var tempRect = rect.startX+","+rect.startY+","+rect.w+","+rect.h;
+	
+	if(radioVal == "Skull")
+	{
+		if(rect.startX == undefined || rect.startY == undefined || rect.w == undefined || rect.h == undefined)
+		{
+			alert("Since you've selected skull label; please draw a bounding box");
+			return;
+		}
+	}
+	else{
+		if(rect.startX != undefined || rect.startY != undefined || rect.w != undefined || rect.h != undefined)
+		{
+			alert("Since you've selected non-skull label; you cannot draw a bounding box");
+			return;
+		}
+		tempRect = "[-1,-1,-1,-1,-1,-1]";
+	}
 
+	var image_data = canvas.toDataURL();
+	$('#image_data').val(image_data);
+	$('#image_name').val(images[currentImageIndex]);
 
+	//add the rectangle dimensions to the form for saving to file
+	//$('#rect_cords').val(tempRect)
+
+	$('#uploaderForm > form').submit()
+}
 
 </script>
 

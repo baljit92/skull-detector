@@ -1,0 +1,85 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+<head>
+
+	<meta charset="utf-8">
+	<title>Pipeline Web App</title>
+
+	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<script src="/static/js/script.js"></script>
+
+</head>
+<body>
+
+<div id="imagesGoHere">
+	 
+</div>
+
+<script>
+// the script draws bounding boxes for the annotated images
+
+// get data from csv file for each image; Added safe keyword to avoid
+// XSS attacks
+var myJSVar = "{{ trainingMap|safe }}";
+var jsonObj = eval('(' + myJSVar + ')');
+
+var html = '';
+
+// creating canvas elements using injection 
+for (obj1 in jsonObj)
+{
+	html+= '<canvas id=image_'+obj1+' width=\"400\" height=\"400\"></canvas>';
+	document.getElementById("imagesGoHere").innerHTML = html;
+}
+
+// draws 'N' bounding box(es) on each image based on the
+// coordinates and dimensions saved in the .csv file
+// the bounding boxes are drawn by the users
+function drawRect(context, index){
+	context.beginPath();
+
+	// get the no. of rectangles on each image; it's a 6-tuple
+	var numRectangles = 0
+	if(jsonObj[index]['bounding_box'] != undefined)
+		numRectangles = jsonObj[index]['bounding_box'].length/6;
+
+	for(var j=0; j<numRectangles; j++)
+	{	
+		// get the x0,y0,width,height numbers based on the rectangle number
+		context.rect(jsonObj[index]['bounding_box'][(6*j)+0], jsonObj[index]['bounding_box'][(6*j)+1], jsonObj[index]['bounding_box'][(6*j)+4], jsonObj[index]['bounding_box'][(6*j)+5]);
+
+		context.lineWidth = 1;
+		context.strokeStyle = 'red';
+		context.stroke();
+	}
+   
+}
+// draw image for each function. the context is the
+// canvas's context and index is the canvas index
+function draw(context, index)
+{
+	
+	var imageObj = new Image();
+	imageObj.onload = function () { 
+		// load the image first 
+		context.drawImage(imageObj, 0,0); 
+		// annotate with bounding box second
+		drawRect(context, index);
+	};
+		
+	imageObj.src = '/static/media/'+jsonObj[index]['image_name'];   
+}
+
+// loop through the training dataset and draw saved images
+// on the canvas
+var i = 0;
+	while (document.getElementById("image_" + i)) {
+		draw(document.getElementById("image_" + i).getContext("2d"), i);
+		i++;       
+	}
+
+</script>
+</body>
+</html>
