@@ -9,37 +9,66 @@
 
 	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 	<script src="/static/js/script.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
+<style>
+
+#canvas {
+        /* This could be done in one single declaration. See the extended sample. */
+        margin-right: auto;
+        margin-left: auto;
+       
+    }
+.container {
+        margin-top: 75px;
+    }
+</style>
 </head>
 
 <!-- initialize the canvas with the image on body load -->
 <body onload="initialize();">
 
-<div>
-	<canvas id="canvas" width="400" height="400"></canvas>
-	
-	<div id="uploaderForm">
-        <form enctype="multipart/form-data" action="{% url 'addImg' %}" method="post">
-			<input type="hidden" for="image_data" id="image_data" name="image_data" />
-			<input type="hidden" for="coords" id="rect_cords" name="rect_cords" value=""/>
-			<input type="hidden" for="image_name" id="image_name" name="image_name" />
-			{% if currentIndex != null %}
-				<input type="hidden" for="image_index" id="image_index" name="image_index" value={{currentIndex}}/>
-			{% endif %}
-			{% if currentIndex == null %}
-				<input type="hidden" for="image_index" id="image_index" name="image_index" value="0"/>
-			{% endif %}
-			<label for='caption'>Skull</label><input type="radio" name="isskull" value="Skull"/>
-  			<label for='caption'>Not Skull</label><input type="radio" name="isskull" value="Not Skull"/>
-		</form>
+<div class="container">
+	<div class="row">
+		<div class="col-sm-12 col-md-12 col-lg-12">
 
-		<div class="uploaderItem" id="uploaderSubmit">
-			<a href="#" onclick="addImage()">Save Image Metadata to File</a>
-			<input type="button" id="next" value="next"/>
-		</div>
+			<canvas id="canvas"></canvas>
 
-		<input type="button" id="btn_viewimg" value="View all annotated images"/>
-		<input type="button" id="btn_downloadimg" value="Download all annotated images"/>
+			<div id="uploaderForm">
+				<form enctype="multipart/form-data" action="{% url 'addImg' %}" method="post">
+					<input type="hidden" for="image_data" id="image_data" name="image_data" />
+					<input type="hidden" for="coords" id="rect_cords" name="rect_cords" value=""/>
+					<input type="hidden" for="image_name" id="image_name" name="image_name" />
+					{% if currentIndex != null %}
+						<input type="hidden" for="image_index" id="image_index" name="image_index" value={{currentIndex}}/>
+					{% endif %}
+					{% if currentIndex == null %}
+						<input type="hidden" for="image_index" id="image_index" name="image_index" value="0"/>
+					{% endif %}
+					<p>
+					<label class="radio-inline" for='caption'><input type="radio" name="isskull" value="Skull"/>Skull</label>
+					<label class="radio-inline" for='caption'><input type="radio" name="isskull" value="Not Skull" checked="checked" />Not Skull</label>
+					</p>
+				</form>
+
+				<p>
+				<div class="uploaderItem" id="uploaderSubmit">
+					<button type="button" class="btn btn-success btn-sm" href="#" onclick="addImage()">Save Image Metadata to File</button>
+					<button type="button" class="btn btn-primary btn-sm" id="next" value="next">Next</button>
+					
+					<button type="button" class="btn btn-primary btn-sm" id="back" value="back">Back</button>
+				</div>
+				</p>
+
+				<p>
+					<button type="button"  class="btn btn-primary btn-sm" id="btn_viewimg" value="view">View all annotated images</button>
+					<button type="button" class="btn btn-primary btn-sm" id="btn_downloadimg" value="download">Download all annotated images</button>
+					<button  type="button" class="btn btn-primary btn-sm" onclick="clearCanvas()" type="Submit1">Clear</button>
+
+				</p>
+			</div>
+	    </div>
     </div>
 </div>
 
@@ -50,34 +79,41 @@ function addImage()
 {	
 	//validation of the form
 	var radioVal = $('input[name=isskull]:checked', '#uploaderForm > form').val()
-	var tempRect = rect.startX+","+rect.startY+","+rect.w+","+rect.h;
-	
 	if(radioVal == "Skull")
-	{
+	{	
+		// check if the image labeled as 'Skull'; has a bounding box in it . If it
+		// does not have a bounding box, give an error
 		if(rect.startX == undefined || rect.startY == undefined || rect.w == undefined || rect.h == undefined)
 		{
 			alert("Since you've selected skull label; please draw a bounding box");
 			return;
 		}
 	}
-	else{
+	else
+	{
+		// check if the image labeled as 'Not Skull'; has a bounding box in it . If it
+		// does have a bounding box, give an error
 		if(rect.startX != undefined || rect.startY != undefined || rect.w != undefined || rect.h != undefined)
 		{
 			alert("Since you've selected non-skull label; you cannot draw a bounding box");
 			return;
 		}
-		tempRect = "[-1,-1,-1,-1,-1,-1]";
 	}
 
-	var image_data = canvas.toDataURL();
-	$('#image_data').val(image_data);
+	// var image_data = canvas.toDataURL();
+	// $('#image_data').val(image_data);
 	$('#image_name').val(images[currentImageIndex]);
-
-	//add the rectangle dimensions to the form for saving to file
-	//$('#rect_cords').val(tempRect)
 
 	$('#uploaderForm > form').submit()
 }
+
+var images = [];
+var myJSVar = "{{ imagesToAnnotate|safe }}";
+var imageArray = eval('(' + myJSVar + ')');
+
+console.log(imageArray)
+for(var j=0;j<imageArray.length;j++)
+	images.push("media/"+imageArray[j]);
 
 </script>
 

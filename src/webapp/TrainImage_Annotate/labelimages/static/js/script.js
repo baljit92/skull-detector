@@ -3,50 +3,52 @@ var ctx;
 var rect = {};
 var drag = false;
 var imageObj = null;
-var images = [];
+
 var currentImageIndex = 0;
 var rect_tuple = new Array();
 //initialize the elements on the body page
 function initialize(){
 
-	//push images from the folder to an array for indexing
-	for(var i=1;i<52;i++)
-	{
-		if(i<10)
-			images.push("media/skull00"+i+".jpg");
-		else if(i<100 && i>=10)
-			images.push("media/skull0"+i+".jpg");
-		else
-			images.push("media/skull"+i+".jpg");
-	}
-	//initialize the next clicl button
+	//initialize the next click button
 	nextBtnInit();
+	//initialize the back click button
+	BackBtnInit();
 	//initialize the canvas with image
 	canvasInit();
 }
 
+function resizeCanvas() {
+    canvas.width = imageObj.width;;
+    canvas.height = imageObj.height;
+}
+
+function getCurrentImageIndex() {
+    return images.indexOf(document.getElementById("image").src);
+}
+
 function nextBtnInit(){
 	$("#next").click(function() 
-	{	
+	{		
 		currentImageIndex = parseInt($('#image_index').val())
 
-		if(currentImageIndex < images.length-1){
-			currentImageIndex += 1;  
-		}
-		else{
-			currentImageIndex = 0;
-		}
-		
+		nextImage = (currentImageIndex + 1) % images.length;
+		currentImageIndex = nextImage;
+
 		ctx.clearRect(0, 0, 400, 400);
 		
 		//replace the canvas image with the next in array image 
 		imageObj = new Image();
 
-		imageObj.onload = function () { ctx.drawImage(imageObj, 0, 0); };
+		imageObj.onload = function () { 
+			resizeCanvas();
+			ctx.drawImage(imageObj, 0, 0); };
+		
+
 		imageObj.src = '/static/'+images[currentImageIndex];
+		
 		$('#image_name').val(images[currentImageIndex]);
 		$('#image_index').val(currentImageIndex);
-
+		
 	});
 
 	$("#btn_viewimg").click(function()
@@ -60,6 +62,59 @@ function nextBtnInit(){
 	});
 
 	
+}
+
+function BackBtnInit(){
+	$("#back").click(function() 
+	{		
+		currentImageIndex = parseInt($('#image_index').val())
+		
+		prevImage = (currentImageIndex - 1 + images.length) % images.length;
+		currentImageIndex = prevImage;
+		ctx.clearRect(0, 0, 400, 400);
+		
+		//replace the canvas image with the next in array image 
+		imageObj = new Image();
+
+		imageObj.onload = function () { 
+			resizeCanvas();
+			ctx.drawImage(imageObj, 0, 0); };
+		
+
+		imageObj.src = '/static/'+images[currentImageIndex];
+		
+		$('#image_name').val(images[currentImageIndex]);
+		$('#image_index').val(currentImageIndex);
+		
+	});
+
+	$("#btn_viewimg").click(function()
+	{
+		window.location.href = "/draw/view";
+	});
+
+	$("#btn_downloadimg").click(function()
+	{
+		window.location.href = "/draw/download";
+	});
+
+	
+}
+
+function clearCanvas() {
+	var context = canvas.getContext("2d");
+	context.clearRect(0, 0, canvas.width, canvas.height);
+	rect.startX = undefined;
+	rect.startY = undefined;
+	$('#rect_cords').val("");
+	rect_tuple = new Array();
+
+	imageObj = new Image();
+	imageObj.onload = function () { 
+		resizeCanvas();
+		ctx.drawImage(imageObj, 0, 0); };
+
+	imageObj.src = '/static/'+images[currentImageIndex];
 }
 
 function canvasInit() {
@@ -76,31 +131,43 @@ function canvasInit() {
 	
 
 	imageObj = new Image();
-	imageObj.onload = function () { ctx.drawImage(imageObj, 0, 0); };
+	imageObj.onload = function () { 
+		resizeCanvas();
+		ctx.drawImage(imageObj, 0, 0); };
 	imageObj.src = '/static/'+images[currentImageIndex];
+	
 	//add the image name to the form for saving to file
 	$('#image_name').val(images[currentImageIndex]);
 	
 }
 
+
+
+
 function mouseDown(e) {
-	rect.startX = e.pageX - this.offsetLeft;
-	rect.startY = e.pageY - this.offsetTop;
+
+	var windowTop = $(window).scrollTop();
+	var windowLeft = $(window).scrollLeft();
+
+	var canvasTop =  $('#canvas').offset().top;
+	var canvasLeft = $('#canvas').offset().left;
+
+	var offsetTopAdd = canvasTop - windowTop;
+	var offsetLeftAdd = canvasLeft - windowLeft;
+	
+	rect.startX = e.pageX - (this.offsetLeft+offsetLeftAdd);
+	rect.startY = e.pageY - (this.offsetTop+offsetTopAdd);
 
 	drag = true;
 }
 
-function Shape(x1, y1, x2, y2, w, h) {
-    this.x1 = x1;
-    this.y1 = y1;
-    this.x2 = x2;
-    this.y2 = y2;
-    this.w = w;
-    this.h = h;
-    
-}
-
 function mouseUp(e) { 
+
+	// We need to store the top-left coordinate of the bounding box.
+	// In order to do that, we need to figure out from which direction
+	// has the user drawn the rectangle (whether from bottom left -> top right...)
+	// Therefore; based on the set of conditions we swap the ending 
+	// and starting points
 
 	rect.endingX = e.pageX - this.offsetLeft;
 	rect.endingY = e.pageY - this.offsetTop
@@ -150,20 +217,22 @@ function mouseUp(e) {
 
 function mouseMove(e) {
 	if (drag) {
-
-		//clear out any existing rectangles on the canvas
-		//ctx.clearRect(0, 0, 400, 400);
-
+		//ctx.moveTo(canvas.offsetWidth,canvas.offsetHeight)
 		ctx.drawImage(imageObj, 0, 0);
 
+		var windowTop = $(window).scrollTop();
+		var windowLeft = $(window).scrollLeft();
+
+		var canvasTop =  $('#canvas').offset().top;
+		var canvasLeft = $('#canvas').offset().left;
+
+		var offsetTopAdd = canvasTop - windowTop;
+		var offsetLeftAdd = canvasLeft - windowLeft;
+
 		//start drawing liens for the rectanle
-		rect.w = (e.pageX - this.offsetLeft) - rect.startX;
-		rect.h = (e.pageY - this.offsetTop) - rect.startY;
+		rect.w = (e.pageX - this.offsetLeft) - (rect.startX+offsetLeftAdd);
+		rect.h = (e.pageY - this.offsetTop) - (rect.startY+offsetTopAdd);
 		ctx.strokeStyle = 'red';
 		ctx.strokeRect(rect.startX, rect.startY, rect.w, rect.h);
-
-		// var tempRect = rect.startX+","+rect.startY+","+Math.abs(rect.w)+","+Math.abs(rect.h);
-		// //add the rectangle dimensions to the form for saving to file
-		// $('#rect_cords').val(tempRect)
 	}
 }

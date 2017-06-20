@@ -9,8 +9,26 @@ import zipfile
 import StringIO
 from PIL import Image, ImageDraw
 import numpy as np
-# import cv2
+import fnmatch
 
+# prepare the array for displaying images on the 
+# index page. The images are pulled from a folder 
+# and stored in an array for iterative indexing
+def prepareInputImageArray():
+	imageFiles = []
+	foldername = "labelimages/static/media"
+
+	files = os.listdir(foldername)
+
+	for file in files:
+		# check if the file is an image
+		if fnmatch.fnmatch(file, '*.jpg') or fnmatch.fnmatch(file, '*.png') or fnmatch.fnmatch(file, '*.jpeg'):
+			imageFiles.append(file)
+	return imageFiles
+
+
+def index(request):
+	return render(request, 'index.html', {'imagesToAnnotate':prepareInputImageArray()})
 
 # Cite: http://www.pyimagesearch.com/2015/02/16/faster-non-maximum-suppression-python/
 # Felzenszwalb et al.
@@ -78,8 +96,7 @@ def non_max_suppression_slow(boxes, overlapThresh):
 	# return only the bounding boxes that were picked
 	return boxes[pick]
 
-def index(request):
-	return render(request, 'index.html', {})
+
 
 # lists all the annotated images
 def viewImg(request):
@@ -101,7 +118,7 @@ def viewImg(request):
 				img_name = line_split[0]
 				d['image_name'] = img_name
 
-				# parse the coorindates for the bouding box and 
+				# parse the coordinates for the bounding box and 
 				# store the bounding box coorindate array in dictionary
 				box = []
 				if line_split[1] != "[]":
@@ -119,6 +136,7 @@ def viewImg(request):
 				# append dictionary to the final array
 				dlist.append(d)
 	return render(request, 'view.html', {'trainingMap':dlist})
+
 
 # downloads all the annotated images in a zip file
 def downloadImg(request):
@@ -210,9 +228,15 @@ def replace_line(file_name, line_num, text):
 # save the annotated image meta data to a csv file
 @csrf_exempt
 def add(request):
-	image_data = request.POST.get('image_data')
 	image_index = request.POST.get('image_index');
 
+	try:
+		print image_index
+		image_index = str(int(image_index)+1)
+	except NameError:
+		image_index = "0"
+
+	
 	# only get the file name; i.e. skullxxx.jpeg
 	image_name = request.POST.get('image_name')
 	imgNameSplit = image_name.split("/")
@@ -222,39 +246,37 @@ def add(request):
 	image_isSkull = request.POST.get('isskull')
 	
 	# get the coordinates array
-	# array = [x0,y0,x1,y1,width,height]
+	# format: array = [x0,y0,x1,y1,width,height]
 	image_rect = request.POST.get('rect_cords')
 
-	pattern = r'^data:(?P<mime_type>[^;]+);base64,(?P<image>.+)$'
-	result = re.match(pattern, image_data)
+		
+	# here we store the meta data related to the annotated image
+	# format : imagename, coordinates array, class
+
+	# create file if it does not exist. if exists; append data
+	filename = "labelimages/static/trainingdata/training_set.csv"
+	file_exists = os.path.isfile(filename)
+
+	with open(filename,'a') as filedata:     
+
 	
-	if result:
-		
-		# here we store the meta data related to the annotated image
-		# format : imagename, coordinates array, class
+		dataToWrite = ""
 
-		# create file if it does not exist. if exists; append data
-		filename = "labelimages/static/trainingdata/training_set.csv"
-		file_exists = os.path.isfile(filename)
+		#headers for the csv file
+		headers = ["imagename","coordinates","class"]
+		writer = csv.DictWriter(filedata, delimiter=',', lineterminator='\n',fieldnames=headers)
 
-		with open(filename,'a') as filedata:     
+		if not file_exists:
+			writer.writeheader()
 
-		
-			dataToWrite = ""
+		# check the class to which the image belongs
+		# class 0 if the image does not have skull; 1 if image has a skull
+		if image_isSkull == "Skull":
+			imgClass = "1"
+		else:
+			imgClass = "0"
+		#append image data to file
 
-			headers = ["imagename","coordinates","class"]
-			writer = csv.DictWriter(filedata, delimiter=',', lineterminator='\n',fieldnames=headers)
-
-			if not file_exists:
-				writer.writeheader()
-			# check the class to which the image belongs
-			# class 0 if the image does not have skull; 1 if image has a skull
-			if image_isSkull == "Skull":
-				imgClass = "1"
-			else:
-				imgClass = "0"
-			#append image data to file
-
-			writer.writerow({"imagename":image_name, "coordinates":'['+image_rect+']', "class":imgClass})
-	return render(request, 'index.html', {'currentIndex':image_index})
+		writer.writerow({"imagename":image_name, "coordinates":'['+image_rect+']', "class":imgClass})
+	return render(request, 'index.html', {'currentIndex':image_index, 'imagesToAnnotate':prepareInputImageArray()})
 	

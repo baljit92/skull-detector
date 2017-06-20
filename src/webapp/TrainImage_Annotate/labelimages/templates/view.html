@@ -10,6 +10,12 @@
 	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 	<script src="/static/js/script.js"></script>
 
+<style>
+canvas {
+    margin: 10px;
+    padding: 5px;
+}
+</style>
 </head>
 <body>
 
@@ -18,7 +24,10 @@
 </div>
 
 <script>
-// the script draws bounding boxes for the annotated images
+// the script draws bounding boxes for the annotated images. This is
+// because we do not save the images with bounding box in them in a 
+// folder as it will take up a lot of space and bandwidth. Hence, we draw
+// the bounding box whenever the user needs to look at the annotated images
 
 // get data from csv file for each image; Added safe keyword to avoid
 // XSS attacks
@@ -28,9 +37,9 @@ var jsonObj = eval('(' + myJSVar + ')');
 var html = '';
 
 // creating canvas elements using injection 
-for (obj1 in jsonObj)
-{
-	html+= '<canvas id=image_'+obj1+' width=\"400\" height=\"400\"></canvas>';
+for (var obj1=0;obj1<jsonObj.length;obj1++)
+{	
+	html+= '<canvas id=image_'+obj1+'></canvas>';
 	document.getElementById("imagesGoHere").innerHTML = html;
 }
 
@@ -56,15 +65,24 @@ function drawRect(context, index){
 	}
    
 }
+
+// resize the canvas to fit the image dimensions for each image
+function resizeCanvas(canvas, imageObj) {
+    canvas.width = imageObj.width;;
+    canvas.height = imageObj.height;
+}
+
 // draw image for each function. the context is the
 // canvas's context and index is the canvas index
-function draw(context, index)
+function draw(canvas, context, index)
 {
 	
 	var imageObj = new Image();
 	imageObj.onload = function () { 
 		// load the image first 
+		resizeCanvas(canvas, imageObj);
 		context.drawImage(imageObj, 0,0); 
+
 		// annotate with bounding box second
 		drawRect(context, index);
 	};
@@ -76,7 +94,8 @@ function draw(context, index)
 // on the canvas
 var i = 0;
 	while (document.getElementById("image_" + i)) {
-		draw(document.getElementById("image_" + i).getContext("2d"), i);
+		$("#img_name_"+i).text(jsonObj[i]['image_name'])
+		draw(document.getElementById("image_" + i), document.getElementById("image_" + i).getContext("2d"), i);
 		i++;       
 	}
 
