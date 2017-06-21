@@ -7,7 +7,8 @@ var imageObj = null;
 var currentImageIndex = 0;
 var rect_tuple = new Array();
 //initialize the elements on the body page
-function initialize(){
+function initialize()
+{
 
 	//initialize the next click button
 	nextBtnInit();
@@ -17,16 +18,19 @@ function initialize(){
 	canvasInit();
 }
 
-function resizeCanvas() {
-    canvas.width = imageObj.width;;
-    canvas.height = imageObj.height;
+function resizeCanvas() 
+{
+	canvas.width = imageObj.width;;
+	canvas.height = imageObj.height;
 }
 
-function getCurrentImageIndex() {
-    return images.indexOf(document.getElementById("image").src);
+function getCurrentImageIndex() 
+{
+	return images.indexOf(document.getElementById("image").src);
 }
 
-function nextBtnInit(){
+function nextBtnInit()
+{
 	$("#next").click(function() 
 	{		
 		currentImageIndex = parseInt($('#image_index').val())
@@ -64,7 +68,8 @@ function nextBtnInit(){
 	
 }
 
-function BackBtnInit(){
+function BackBtnInit()
+{
 	$("#back").click(function() 
 	{		
 		currentImageIndex = parseInt($('#image_index').val())
@@ -101,7 +106,8 @@ function BackBtnInit(){
 	
 }
 
-function clearCanvas() {
+function clearCanvas() 
+{
 	var context = canvas.getContext("2d");
 	context.clearRect(0, 0, canvas.width, canvas.height);
 	$('#rect_cords').val("");
@@ -115,8 +121,8 @@ function clearCanvas() {
 	imageObj.src = '/static/'+images[currentImageIndex];
 }
 
-function canvasInit() {
-   
+function canvasInit() 
+{   
 	canvas = document.getElementById('canvas');
 	ctx = canvas.getContext('2d');
 
@@ -142,7 +148,8 @@ function canvasInit() {
 
 
 
-function mouseDown(e) {
+function mouseDown(e) 
+{
 
 	// since the canvas is moved form the center
 	// the drawing coordinates need to be adjusted
@@ -162,7 +169,8 @@ function mouseDown(e) {
 	drag = true;
 }
 
-function mouseUp(e) { 
+function mouseUp(e) 
+{ 
 
 	// We need to store the top-left coordinate of the bounding box.
 	// In order to do that, we need to figure out from which direction
@@ -179,9 +187,8 @@ function mouseUp(e) {
 	var offsetTopAdd = canvasTop - windowTop;
 	var offsetLeftAdd = canvasLeft - windowLeft;
 
-	rect.endingX = e.pageX - (this.offsetLeft);
-	rect.endingY = e.pageY - (this.offsetTop);
-
+	rect.endingX = e.pageX - (this.offsetLeft+offsetLeftAdd);
+	rect.endingY = e.pageY - (this.offsetTop+offsetTopAdd);
 	
 	if((rect.startX > rect.endingX) && (rect.startY > rect.endingY))
 	{
@@ -195,16 +202,17 @@ function mouseUp(e) {
 	}
 	else if((rect.startX < rect.endingX) && (rect.startY > rect.endingY))
 	{
-		var height = (e.pageY - this.offsetTop) - (rect.endingY+offsetTopAdd);
-		rect.startY = rect.startY + height;
+		var height = Math.abs((e.pageY - this.offsetTop) - (rect.endingY+offsetTopAdd));
+		rect.h = height
+		rect.startY = rect.startY + Math.abs(height);
 	}
 	else if((rect.startX > rect.endingX) && (rect.startY < rect.endingY))
 	{
-		var width = (e.pageX - this.offsetLeft) - (rect.endingX+offsetLeftAdd);
-		rect.startX = rect.startX + width;
+		var width = Math.abs((e.pageX - this.offsetLeft) - (rect.endingX+offsetLeftAdd));
+		rect.w = width
+		rect.startX = rect.startX + Math.abs(width);
 	}
 
-	
 	var tempRectTuple = []
 	// top-left
 	tempRectTuple.push(rect.startX);
@@ -227,9 +235,10 @@ function mouseUp(e) {
 
 }
 
-function mouseMove(e) {
-	if (drag) {
-		//ctx.moveTo(canvas.offsetWidth,canvas.offsetHeight)
+function mouseMove(e) 
+{
+	if (drag) 
+	{
 		ctx.drawImage(imageObj, 0, 0);
 
 		var windowTop = $(window).scrollTop();
