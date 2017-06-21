@@ -2,7 +2,7 @@
 
 ## Description
 
-The web app let's the user annotate images by drawing a red color bounding box around the skulls in the image. 
+The web app let's the user annotate images by drawing a red color bounding box around the skulls in the image. The user can label the image with *Skull* or *Not Skull* class.
 Once the user clicks the Save button; the metadata of the annotated image such as `(image name, x0, y0, x1, y1, width, height, class)` is stored in a .csv file. 
 The csv file gets downloaded when the user downloads the annotated images. 
 
