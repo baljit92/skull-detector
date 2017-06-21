@@ -8,10 +8,11 @@
 	<title>Pipeline Web App</title>
 
 	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-	<script src="/static/js/script.js"></script>
+	
 	<link rel="stylesheet" href="/static/css/style.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="/static/js/script.js"></script>
 
 </head>
 
@@ -24,10 +25,11 @@
       <a class="navbar-brand"  style="color:black">AnnotationML</a>
     </div>
     <ul class="nav navbar-nav">
-      <!-- <li class="active"><a href="#">Home</a></li> -->
-      <li><a href="/draw/view" style="color:white">View annotated images</a></li>
-      <li><a href="/draw/downloadall" style="color:white">Download training images</a></li>
-      <li><a href="/draw/download" style="color:white">Download annotated images</a></li>
+      <li><a href="/draw/view" style="color:white">View annotated images without NMS</a></li>
+      <li><a href="/draw/viewNMS" style="color:white">View annotated images with NMS</a></li>
+      <li><a href="/draw/downloadall" style="color:white">Download all images</a></li>
+      <li><a href="/draw/download" style="color:white">Download annotated images without NMS</a></li>
+      <li><a href="/draw/downloadNMS" style="color:white">Download annotated images with NMS</a></li>
     </ul>
   </div>
 </nav>
@@ -52,8 +54,8 @@
 						<input type="hidden" for="image_index" id="image_index" name="image_index" value="0"/>
 					{% endif %}
 					<p>
-					<label class="radio-inline" for="skullbtn"><input type="radio" id="skullbtn" name="isskull" value="Skull"/>Skull</label>
-					<label class="radio-inline" for="notskullbtn"><input type="radio" id="notskullbtn" name="isskull" value="Not Skull" checked />Not Skull</label>
+					<label class="radio-inline" for="skullbtn"><input type="radio" class="img_class" id="skullbtn" name="isskull" value="Skull"/>Skull</label>
+					<label class="radio-inline" for="notskullbtn"><input type="radio" class="img_class" id="notskullbtn" name="isskull" value="Not Skull" checked />Not Skull</label>
 					</p>
 				</form>
 
@@ -98,6 +100,8 @@ function addImage()
 	{
 		// check if the image labeled as 'Not Skull'; has a bounding box in it . If it
 		// does have a bounding box, give an error
+		console.log("Rect width:", rect.w)
+		console.log("Rect height:", rect.h)
 		if(rect.startX != undefined || rect.startY != undefined || rect.w != undefined || rect.h != undefined)
 		{
 			alert("Since you've selected non-skull label; you cannot draw a bounding box");
@@ -117,6 +121,11 @@ var imageArray = eval('(' + myJSVar + ')');
 for(var j=0;j<imageArray.length;j++)
 	images.push("media/"+imageArray[j]);
 
+$(".img_class").change(function() 
+{
+	var radioVal = $('input[name=isskull]:checked', '#uploaderForm > form').val()
+	//isCanvasEnable(radioVal)   
+});
 </script>
 
 </body>

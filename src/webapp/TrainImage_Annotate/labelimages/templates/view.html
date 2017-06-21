@@ -25,22 +25,24 @@ canvas {
 <nav class="navbar navbar-default" style="background-color: #449d44;">
   <div class="container-fluid">
     <div class="navbar-header">
-      <a class="navbar-brand" href="/draw/add" style="color:black">AnnotationML</a>
+      <a class="navbar-brand" href="/draw" style="color:black">AnnotationML</a>
     </div>
     <ul class="nav navbar-nav">
-      <!-- <li class="active"><a href="#">Home</a></li> -->
-      <li><a href="/draw/view" style="color:white">View annotated images</a></li>
-      <li><a href="/draw/downloadall" style="color:white">Download training images</a></li>
-      <li><a href="/draw/download" style="color:white">Download annotated images</a></li>
+      <li><a href="/draw/view" style="color:white">View annotated images without NMS</a></li>
+      <li><a href="/draw/viewNMS" style="color:white">View annotated images with NMS</a></li>
+      <li><a href="/draw/downloadall" style="color:white">Download all images</a></li>
+      <li><a href="/draw/download" style="color:white">Download annotated images without NMS</a></li>
+      <li><a href="/draw/downloadNMS" style="color:white">Download annotated images with NMS</a></li>
     </ul>
   </div>
 </nav>
 
 {% if not trainingMap %}
- 
-
-	<p> No annotated images saved </p>
-
+<div class="row">
+	<div class="col-sm-5 col-sm-offset-5">
+		<h3> No annotated images saved </h3>
+	</div>
+</div>
 {% endif %}
 <div id="imagesGoHere">
 	 

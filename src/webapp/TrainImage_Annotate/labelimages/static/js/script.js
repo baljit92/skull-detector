@@ -16,6 +16,8 @@ function initialize()
 	BackBtnInit();
 	//initialize the canvas with image
 	canvasInit();
+
+	
 }
 
 function resizeCanvas() 
@@ -65,8 +67,10 @@ function nextBtnInit()
 		window.location.href = "/draw/download";
 	});
 
+
 	
 }
+
 
 function BackBtnInit()
 {
@@ -112,6 +116,8 @@ function clearCanvas()
 	context.clearRect(0, 0, canvas.width, canvas.height);
 	$('#rect_cords').val("");
 	rect_tuple = new Array();
+	
+	rect = {};
 
 	imageObj = new Image();
 	imageObj.onload = function () { 
