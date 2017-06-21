@@ -9,32 +9,37 @@
 
 	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 	<script src="/static/js/script.js"></script>
+	<link rel="stylesheet" href="/static/css/style.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-	 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-<style>
-
-#canvas {
-        /* This could be done in one single declaration. See the extended sample. */
-        margin-right: auto;
-        margin-left: auto;
-       
-    }
-.container {
-        margin-top: 75px;
-    }
-</style>
 </head>
 
 <!-- initialize the canvas with the image on body load -->
 <body onload="initialize();">
 
+<nav class="navbar navbar-default" style="background-color: #449d44;">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand"  style="color:black">AnnotationML</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <!-- <li class="active"><a href="#">Home</a></li> -->
+      <li><a href="/draw/view" style="color:white">View annotated images</a></li>
+      <li><a href="/draw/downloadall" style="color:white">Download training images</a></li>
+      <li><a href="/draw/download" style="color:white">Download annotated images</a></li>
+    </ul>
+  </div>
+</nav>
+
 <div class="container">
+
 	<div class="row">
-		<div class="col-sm-12 col-md-12 col-lg-12">
+		<div class="col-sm-4 col-sm-offset-4">
 
 			<canvas id="canvas"></canvas>
-
+			
+            
 			<div id="uploaderForm">
 				<form enctype="multipart/form-data" action="{% url 'addImg' %}" method="post">
 					<input type="hidden" for="image_data" id="image_data" name="image_data" />
@@ -47,28 +52,28 @@
 						<input type="hidden" for="image_index" id="image_index" name="image_index" value="0"/>
 					{% endif %}
 					<p>
-					<label class="radio-inline" for='caption'><input type="radio" name="isskull" value="Skull"/>Skull</label>
-					<label class="radio-inline" for='caption'><input type="radio" name="isskull" value="Not Skull" checked="checked" />Not Skull</label>
+					<label class="radio-inline" for="skullbtn"><input type="radio" id="skullbtn" name="isskull" value="Skull"/>Skull</label>
+					<label class="radio-inline" for="notskullbtn"><input type="radio" id="notskullbtn" name="isskull" value="Not Skull" checked />Not Skull</label>
 					</p>
 				</form>
 
 				<p>
 				<div class="uploaderItem" id="uploaderSubmit">
 					<button type="button" class="btn btn-success btn-sm" href="#" onclick="addImage()">Save Image Metadata to File</button>
-					<button type="button" class="btn btn-primary btn-sm" id="next" value="next">Next</button>
-					
-					<button type="button" class="btn btn-primary btn-sm" id="back" value="back">Back</button>
+					<button  type="button" class="btn btn-primary btn-sm" onclick="clearCanvas()" type="Submit1">Clear</button>
 				</div>
 				</p>
 
 				<p>
-					<button type="button"  class="btn btn-primary btn-sm" id="btn_viewimg" value="view">View all annotated images</button>
-					<button type="button" class="btn btn-primary btn-sm" id="btn_downloadimg" value="download">Download all annotated images</button>
-					<button  type="button" class="btn btn-primary btn-sm" onclick="clearCanvas()" type="Submit1">Clear</button>
-
+					
 				</p>
 			</div>
 	    </div>
+	    
+		<div class="col-sm-2 button-design">
+	    	<a class="next round" id="next"></a>
+	    </div>
+	    
     </div>
 </div>
 
@@ -99,11 +104,8 @@ function addImage()
 			return;
 		}
 	}
-
-	// var image_data = canvas.toDataURL();
-	// $('#image_data').val(image_data);
 	$('#image_name').val(images[currentImageIndex]);
-
+	
 	$('#uploaderForm > form').submit()
 }
 
@@ -111,7 +113,7 @@ var images = [];
 var myJSVar = "{{ imagesToAnnotate|safe }}";
 var imageArray = eval('(' + myJSVar + ')');
 
-console.log(imageArray)
+//prepare the image array for display on the index page
 for(var j=0;j<imageArray.length;j++)
 	images.push("media/"+imageArray[j]);
 

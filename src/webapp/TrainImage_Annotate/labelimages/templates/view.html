@@ -9,6 +9,9 @@
 
 	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 	<script src="/static/js/script.js"></script>
+	<link rel="stylesheet" href="/static/css/style.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 <style>
 canvas {
@@ -19,6 +22,26 @@ canvas {
 </head>
 <body>
 
+<nav class="navbar navbar-default" style="background-color: #449d44;">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/draw/add" style="color:black">AnnotationML</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <!-- <li class="active"><a href="#">Home</a></li> -->
+      <li><a href="/draw/view" style="color:white">View annotated images</a></li>
+      <li><a href="/draw/downloadall" style="color:white">Download training images</a></li>
+      <li><a href="/draw/download" style="color:white">Download annotated images</a></li>
+    </ul>
+  </div>
+</nav>
+
+{% if not trainingMap %}
+ 
+
+	<p> No annotated images saved </p>
+
+{% endif %}
 <div id="imagesGoHere">
 	 
 </div>

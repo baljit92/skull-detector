@@ -101,6 +101,7 @@ def non_max_suppression_slow(boxes, overlapThresh):
 # lists all the annotated images
 def viewImg(request):
 	trainingFile = []
+	dlist = []
 	filename = "labelimages/static/trainingdata/training_set.csv"
 	# check if .csv file exists
 	file_exists = os.path.isfile(filename)
@@ -108,7 +109,7 @@ def viewImg(request):
 		with open(filename, 'r') as csv_file:
 			# skip the headers
 			next(csv_file)
-			dlist = []
+			
 
 			# create a list of dictionaries for each line
 			for line in csv_file:
@@ -138,12 +139,79 @@ def viewImg(request):
 	return render(request, 'view.html', {'trainingMap':dlist})
 
 
+
 # downloads all the annotated images in a zip file
-def downloadImg(request):
+def downloadAll(request):
 	zip_subdir = "training_images"
 	zip_filename = "%s.zip" % zip_subdir
 	
 	imgFiles = []
+	s = StringIO.StringIO()
+	zf = zipfile.ZipFile(s, "w")
+	foldername = "labelimages/static/media"
+
+	files = os.listdir(foldername)
+
+	for file in files:
+		# check if the file is an image
+		if fnmatch.fnmatch(file, '*.jpg') or fnmatch.fnmatch(file, '*.png') or fnmatch.fnmatch(file, '*.jpeg'):
+
+			zip_path = os.path.join(zip_subdir, file)
+				
+				# Add file, at correct path
+			full_path = "labelimages/static/media/"+file
+			zf.write(full_path, zip_path)
+   # Must close zip for all contents to be written
+	zf.close()
+
+    # Grab ZIP file from in-memory
+	resp = HttpResponse(s.getvalue(), content_type = "application/x-zip-compressed")
+  
+	resp['Content-Disposition'] = 'attachment; filename=%s' % zip_filename
+
+	return resp
+
+
+# download the csv file which contains the metadata for 
+# each annotated image
+def downloadFile(request):
+	zip_subdir = "training_datafile"
+	zip_filename = "%s.zip" % zip_subdir
+	s = StringIO.StringIO()
+	zf = zipfile.ZipFile(s, "w")
+
+    	#CSV File
+	csvfilename = "labelimages/static/trainingdata/training_set.csv"
+	file_exists = os.path.isfile(csvfilename)
+	if file_exists:
+		zip_path = os.path.join(zip_subdir, "training_set.csv")
+		zf.write("labelimages/static/trainingdata/training_set.csv", zip_path)
+
+   # Must close zip for all contents to be written
+	zf.close()
+
+    # Grab ZIP file from in-memory
+	resp = HttpResponse(s.getvalue(), content_type = "application/x-zip-compressed")
+  
+	resp['Content-Disposition'] = 'attachment; filename=%s' % zip_filename
+
+	return resp
+
+# download the annotated images with the bounding box.
+# the .csv file which contains the metadata
+# is also downloaded with the annotated images
+# P.S. the .csv file contains images with the same
+# name while the images are labeled with copy 
+# numbers since ZipFile module does not allow
+# duplicate files.
+
+def downloadImg(request):
+	zip_subdir = "training_annot_images"
+	zip_filename = "%s.zip" % zip_subdir
+	
+	imgFiles = []
+	boundingBox = []
+	imgClass = []
 	s = StringIO.StringIO()
 	zf = zipfile.ZipFile(s, "w")
 	filename = "labelimages/static/trainingdata/training_set.csv"
@@ -154,7 +222,7 @@ def downloadImg(request):
 			# skip the headers
 			next(csv_file)
 			dlist = []
-
+			dup_dict = {}
 			# create a list of dictionaries for each line
 			for line in csv_file:
 				d = {}
@@ -162,15 +230,33 @@ def downloadImg(request):
 
 				img_name = line_split[0]
 
+				img_file = img_name.split(".")[0]
+				img_ext = img_name.split(".")[1]
+
+				count = 0
+				if img_name in dup_dict:
+					count = dup_dict[img_name]
+					dup_dict[img_name] += 1
+				else:
+					dup_dict[img_name] = 1
+
 				# add coordinates for the annotated image in 
-				# an array named 'box'
+				# an array named 'box'. This is to draw the
+				# bounding box(es) on the image 
 				box = []
 				box.append(line_split[1][2:])
 				for i in range(2,len(line_split)-2):
 					box.append(line_split[i])
 				box.append(line_split[i+1][:-2])
 
-				imgFiles.append(img_name)
+				boundingBox.append(box);
+				if count>0:
+					imgFiles.append(img_file+"_"+str(count)+"."+img_ext)
+				else:
+					imgFiles.append(img_name)
+
+				imgClass.append(line_split[-1][0])
+
 				im = Image.open("labelimages/static/media/"+img_name)
 
 				# draw bounding boxes for each image by first calculating
@@ -182,33 +268,66 @@ def downloadImg(request):
 				# bounding boxes
 				draw = ImageDraw.Draw(im)
 				for i in range(0,numRectangles):
-					draw.rectangle([(int(box[(6*i)+0]), int(box[(6*i)+1])), (int(box[(6*i)+2]), int(box[(6*i)+3]))], fill=None, outline='red')
+					draw.rectangle([(float(box[(6*i)+0]), float(box[(6*i)+1])), (float(box[(6*i)+2]), float(box[(6*i)+3]))], fill=None, outline='red')
 				
 				del draw
-				# save the annotated; for zipping purposes
-				im.save(img_name)
-				#im.show()
+				
+				# Since ZipModule cannot handle duplicate file names;
+				# rename the duplicate files by appending the copy number
+				# to the image 
 
+				# save the annotated; for zipping purposes
+				if count>0:
+					im.save(img_file+"_"+str(count)+"."+img_ext)
+				else:
+					im.save(img_name)
+				
 				# getting the image ready to be added to the zip file
 				
 				# add zip path to the annotated image; new path after zip
-				zip_path = os.path.join(zip_subdir, img_name)
+				if count>0:
+					zip_path = os.path.join(zip_subdir, img_file+"_"+str(count)+"."+img_ext)
+				else:
+					zip_path = os.path.join(zip_subdir, img_name)
 				
 				# Add file, at correct path
-				full_path = img_name
+				if count>0:
+					full_path = img_file+"_"+str(count)+"."+img_ext
+				else:
+					full_path = img_name
+
 				zf.write(full_path, zip_path)
 
 				#remove the annotated
-				os.remove(img_name)
-    
+				if count>0:
+					os.remove(img_file+"_"+str(count)+"."+img_ext)
+				else:
+					os.remove(img_name)
 
-    	#CSV File
-		zip_path = os.path.join(zip_subdir, "training_set.csv")
-		zf.write("labelimages/static/trainingdata/training_set.csv", zip_path)
+	# create a new csv file with naming according to the annotated images.
+	# this csv file contains metadata related to each annotated image
+	csv_filename = "labelimages/static/trainingdata/final_training_set.csv"
+	
+	csv_file_exists = os.path.isfile(csv_filename)
 
+	if csv_file_exists:
+		os.remove(csv_filename)
+
+	with open(csv_filename,'a') as filedata:
+		dataToWrite = ""
+		headers = ["imagename","coordinates","class"]
+		writer = csv.DictWriter(filedata, delimiter=',', lineterminator='\n',fieldnames=headers)
+		writer.writeheader()
+		
+		for i in range(0,len(imgFiles)):
+			writer.writerow({"imagename":imgFiles[i], "coordinates":boundingBox[i], "class":imgClass[i]})
+
+	zip_path = os.path.join(zip_subdir, "final_training_set.csv")
+		
+	zf.write(csv_filename, zip_path)
 	   # Must close zip for all contents to be written
-		zf.close()
-
+	zf.close()
+	
     # Grab ZIP file from in-memory
 	resp = HttpResponse(s.getvalue(), content_type = "application/x-zip-compressed")
   
@@ -230,17 +349,28 @@ def replace_line(file_name, line_num, text):
 def add(request):
 	image_index = request.POST.get('image_index');
 
+	if image_index is None:
+		image_index = "0"
+
 	try:
 		print image_index
 		image_index = str(int(image_index)+1)
-	except NameError:
-		image_index = "0"
+	except ValueError:
+		temp_index = image_index[:-1]
+		image_index = str(int(temp_index)+1)
+
+
+	# only get the file name; 
+	image_name = request.POST.get('image_name')
 
 	
-	# only get the file name; i.e. skullxxx.jpeg
-	image_name = request.POST.get('image_name')
+
+	if image_name is None:
+		image_name = ""
 	imgNameSplit = image_name.split("/")
-	image_name = imgNameSplit[1]
+	
+	if all(v for v in imgNameSplit):
+		image_name = imgNameSplit[1]
 
 	# get image label
 	image_isSkull = request.POST.get('isskull')
@@ -276,7 +406,7 @@ def add(request):
 		else:
 			imgClass = "0"
 		#append image data to file
-
-		writer.writerow({"imagename":image_name, "coordinates":'['+image_rect+']', "class":imgClass})
+		if image_name!= "":
+			writer.writerow({"imagename":image_name, "coordinates":'['+image_rect+']', "class":imgClass})
 	return render(request, 'index.html', {'currentIndex':image_index, 'imagesToAnnotate':prepareInputImageArray()})
 	

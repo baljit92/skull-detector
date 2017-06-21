@@ -104,8 +104,6 @@ function BackBtnInit(){
 function clearCanvas() {
 	var context = canvas.getContext("2d");
 	context.clearRect(0, 0, canvas.width, canvas.height);
-	rect.startX = undefined;
-	rect.startY = undefined;
 	$('#rect_cords').val("");
 	rect_tuple = new Array();
 
@@ -146,6 +144,9 @@ function canvasInit() {
 
 function mouseDown(e) {
 
+	// since the canvas is moved form the center
+	// the drawing coordinates need to be adjusted
+	// accoding to the offset moved
 	var windowTop = $(window).scrollTop();
 	var windowLeft = $(window).scrollLeft();
 
@@ -169,8 +170,19 @@ function mouseUp(e) {
 	// Therefore; based on the set of conditions we swap the ending 
 	// and starting points
 
-	rect.endingX = e.pageX - this.offsetLeft;
-	rect.endingY = e.pageY - this.offsetTop
+	var windowTop = $(window).scrollTop();
+	var windowLeft = $(window).scrollLeft();
+
+	var canvasTop =  $('#canvas').offset().top;
+	var canvasLeft = $('#canvas').offset().left;
+
+	var offsetTopAdd = canvasTop - windowTop;
+	var offsetLeftAdd = canvasLeft - windowLeft;
+
+	rect.endingX = e.pageX - (this.offsetLeft);
+	rect.endingY = e.pageY - (this.offsetTop);
+
+	
 	if((rect.startX > rect.endingX) && (rect.startY > rect.endingY))
 	{
 		rect.startX = rect.endingX;
@@ -183,12 +195,12 @@ function mouseUp(e) {
 	}
 	else if((rect.startX < rect.endingX) && (rect.startY > rect.endingY))
 	{
-		var height = (e.pageY - this.offsetTop) - rect.startY
+		var height = (e.pageY - this.offsetTop) - (rect.endingY+offsetTopAdd);
 		rect.startY = rect.startY + height;
 	}
 	else if((rect.startX > rect.endingX) && (rect.startY < rect.endingY))
 	{
-		var width = (e.pageX - this.offsetLeft) - rect.startX
+		var width = (e.pageX - this.offsetLeft) - (rect.endingX+offsetLeftAdd);
 		rect.startX = rect.startX + width;
 	}
 
