@@ -1,0 +1,41 @@
+body{
+	background-color: #F8F8F8
+}
+#canvas 
+{
+	margin-right: auto;
+	margin-left: auto;
+}
+.container 
+{
+	margin-top: 75px;
+}
+
+.next 
+{
+	background-color: #4CAF50;
+	color: white;
+}
+
+.round 
+{
+	border-radius: 50%;
+	text-decoration: none;
+	display: inline-block;
+	width: 40px;
+	height: 40px;
+	background-image: url('/static/img/next_arrow.png');
+	background-size: 100%;
+	background-repeat: no-repeat;
+	margin-left: 500px;
+}
+
+a:hover
+{ 
+	background-color: transparent;
+}
+
+.button-design 
+{
+	margin-top: 100px;
+}

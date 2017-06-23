@@ -1,0 +1,132 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+<head>
+
+	<meta charset="utf-8">
+	<title>Pipeline Web App</title>
+
+	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+	
+	<link rel="stylesheet" href="/static/css/style.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="/static/js/script.js"></script>
+
+</head>
+
+<!-- initialize the canvas with the image on body load -->
+<body onload="initialize();">
+
+<nav class="navbar navbar-default" style="background-color: #449d44;">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand"  style="color:black">AnnotationML</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li><a href="/draw/view" style="color:white">View annotated images without NMS</a></li>
+      <li><a href="/draw/viewNMS" style="color:white">View annotated images with NMS</a></li>
+      <li><a href="/draw/downloadall" style="color:white">Download all images</a></li>
+      <li><a href="/draw/download" style="color:white">Download annotated images without NMS</a></li>
+      <li><a href="/draw/downloadNMS" style="color:white">Download annotated images with NMS</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container">
+
+	<div class="row">
+		<div class="col-sm-2 col-sm-offset-4">
+
+			<canvas id="canvas" style="border:5px solid #2e6da4;"></canvas>
+			
+            
+			<div id="uploaderForm">
+				<form enctype="multipart/form-data" action="{% url 'addImg' %}" method="post">
+					<input type="hidden" for="image_data" id="image_data" name="image_data" />
+					<input type="hidden" for="coords" id="rect_cords" name="rect_cords" value=""/>
+					<input type="hidden" for="image_name" id="image_name" name="image_name" />
+					{% if currentIndex != null %}
+						<input type="hidden" for="image_index" id="image_index" name="image_index" value={{currentIndex}}/>
+					{% endif %}
+					{% if currentIndex == null %}
+						<input type="hidden" for="image_index" id="image_index" name="image_index" value="0"/>
+					{% endif %}
+					<p>
+					<label class="radio-inline" for="skullbtn"><input type="radio" class="img_class" id="skullbtn" name="isskull" value="Skull"/>Skull</label>
+					<label class="radio-inline" for="notskullbtn"><input type="radio" class="img_class" id="notskullbtn" name="isskull" value="Not Skull" checked />Not Skull</label>
+					</p>
+				</form>
+
+				<p>
+				<div class="uploaderItem" id="uploaderSubmit">
+					<button type="button" class="btn btn-success btn-sm" href="#" onclick="addImage()">Save Image Metadata to File</button>
+					<button  type="button" class="btn btn-primary btn-sm" onclick="clearCanvas()" type="Submit1">Clear</button>
+				</div>
+				</p>
+
+				<p>
+					
+				</p>
+			</div>
+	    </div>
+	    
+		<div class="col-sm-2 button-design">
+	    	<a class="next round" id="next"></a>
+	    </div>
+	    
+    </div>
+</div>
+
+<script>
+ 
+
+function addImage()
+{	
+	//validation of the form
+	var radioVal = $('input[name=isskull]:checked', '#uploaderForm > form').val()
+	if(radioVal == "Skull")
+	{	
+		// check if the image labeled as 'Skull'; has a bounding box in it . If it
+		// does not have a bounding box, give an error
+		if(rect.startX == undefined || rect.startY == undefined || rect.w == undefined || rect.h == undefined)
+		{
+			alert("Since you've selected skull label; please draw a bounding box");
+			return;
+		}
+	}
+	else
+	{
+		// check if the image labeled as 'Not Skull'; has a bounding box in it . If it
+		// does have a bounding box, give an error
+		console.log("Rect width:", rect.w)
+		console.log("Rect height:", rect.h)
+		if(rect.startX != undefined || rect.startY != undefined || rect.w != undefined || rect.h != undefined)
+		{
+			alert("Since you've selected non-skull label; you cannot draw a bounding box");
+			return;
+		}
+	}
+	$('#image_name').val(images[currentImageIndex]);
+	
+	$('#uploaderForm > form').submit()
+}
+
+var images = [];
+var myJSVar = "{{ imagesToAnnotate|safe }}";
+var imageArray = eval('(' + myJSVar + ')');
+
+//prepare the image array for display on the index page
+for(var j=0;j<imageArray.length;j++)
+	images.push("media/"+imageArray[j]);
+
+$(".img_class").change(function() 
+{
+	var radioVal = $('input[name=isskull]:checked', '#uploaderForm > form').val()
+	//isCanvasEnable(radioVal)   
+});
+</script>
+
+</body>
+</html>

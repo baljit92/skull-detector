@@ -17,6 +17,6 @@ from django.conf.urls import include, url
 from django.contrib import admin
 
 urlpatterns = [
-    url(r'^draw/', include('labelimages.urls')),
+    url(r'^draw/', include('Annotate.urls')),
     url(r'^admin/', admin.site.urls),
 ]
