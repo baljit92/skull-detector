@@ -1,3 +1,7 @@
+'''
+Orignial source: https://github.com/vxy10/ImageAugmentation
+'''
+
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import cv2
@@ -9,8 +13,6 @@ from PIL import Image
 import csv
 import ast
 
-filename = "/Users/antariksacp/Desktop/training_images_nms/training_set.csv"
-final_filename = "/Users/antariksacp/Desktop/training_images_nms/training_set_augment.csv"
 
 def parse(ifile, ofile):
 	'''
@@ -66,27 +68,7 @@ def transform_image(img,ang_range,brightness=0):
 	rows,cols,ch = img.shape    
 	Rot_M = cv2.getRotationMatrix2D((cols/2,rows/2),ang_rot,1)
 
-	# Translation
-	# tr_x = trans_range*np.random.uniform()-trans_range/2
-	# tr_y = trans_range*np.random.uniform()-trans_range/2
-	# Trans_M = np.float32([[1,0,tr_x],[0,1,tr_y]])
-
-	# Shear
-	# pts1 = np.float32([[5,5],[20,5],[5,20]])
-
-	# pt1 = 5+shear_range*np.random.uniform()-shear_range/2
-	# pt2 = 20+shear_range*np.random.uniform()-shear_range/2
-
-	# # Brightness
-
-
-	# pts2 = np.float32([[pt1,5],[pt2,pt1],[5,pt2]])
-
-	# shear_M = cv2.getAffineTransform(pts1,pts2)
-
 	img = cv2.warpAffine(img,Rot_M,(cols,rows))
-	# img = cv2.warpAffine(img,Trans_M,(cols,rows))
-	# img = cv2.warpAffine(img,shear_M,(cols,rows))
 
 	if brightness == 1:
 	  img = augment_brightness_camera_images(img)
@@ -200,10 +182,12 @@ def main(argv):
 					img = transform_image(image,0,brightness=1)
 					im = Image.fromarray(img)
 					
+					#generate only 5 augmented versions with big variations in the image
 					if i%5:
 						im.save(output_img_directory+"/"+file_name+"_"+str(i)+"."+file_ext)
 						image_new = file_name+"_"+str(i)+"."+file_ext
 						
+						#write the augmented versions to a csv file with the existin coordinates
 						with open(outputfile,'a') as filedata:    
 
 							
