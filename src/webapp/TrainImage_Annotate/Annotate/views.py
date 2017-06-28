@@ -9,7 +9,7 @@ import StringIO
 from PIL import Image, ImageDraw
 import numpy as np
 import fnmatch
-
+import math
 
 def prepareArrayNMS(filename):
 	
@@ -86,11 +86,22 @@ def prepareArrayNMS(filename):
 
 				# preparing tuples
 				for i in range(0,num_rects):
-					temp_tuple = (float(data['bounding_box'][(6*i)+0]), float(data['bounding_box'][(6*i)+1]), float(data['bounding_box'][(6*i)+2]), float(data['bounding_box'][(6*i)+3]))
-					box_coords.append(temp_tuple)
+
+					x0 = math.isnan(float(data['bounding_box'][(6*i)+0]))
+					y0 = math.isnan(float(data['bounding_box'][(6*i)+1]))
+					x1 = math.isnan(float(data['bounding_box'][(6*i)+2]))
+					y1 = math.isnan(float(data['bounding_box'][(6*i)+3]))
+
+					if not x0 and not x1 and not y0 and not y1:
+						temp_tuple = (float(data['bounding_box'][(6*i)+0]), float(data['bounding_box'][(6*i)+1]), float(data['bounding_box'][(6*i)+2]), float(data['bounding_box'][(6*i)+3]))
+						box_coords.append(temp_tuple)
 					
-					area = (float(data['bounding_box'][(6*i)+2]) - float(data['bounding_box'][(6*i)+0])) * (float(data['bounding_box'][(6*i)+3]) - float(data['bounding_box'][(6*i)+1]))
-					box_area.append(area)
+						area = (float(data['bounding_box'][(6*i)+2]) - float(data['bounding_box'][(6*i)+0])) * (float(data['bounding_box'][(6*i)+3]) - float(data['bounding_box'][(6*i)+1]))
+						box_area.append(area)
+					else:
+						box_area = []
+						box_coords = []
+						continue
 
 				# tuple for every annotated image for Non-Maximum Suppression
 				img_nms_tuple = (data['image_name'], data['class'], np.array(box_coords), box_area)
@@ -579,6 +590,7 @@ def downloadImgsNMS(request):
 
 		num_rects = len(box)/6
 		draw = ImageDraw.Draw(im)
+
 		for i in range(0,num_rects):
 			draw.rectangle([(float(box[(6*i)+0]), float(box[(6*i)+1])), (float(box[(6*i)+2]), float(box[(6*i)+3]))], fill=None, outline='red')
 		del draw
