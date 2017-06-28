@@ -1,1 +1,3 @@
-# HiringExercise_MLEngineer_Baljit92
+# Skull detection in images
+
+Results can be found unde `results/`
