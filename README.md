@@ -32,3 +32,11 @@ To setup TensorFlow and TensorBox, follow instructions below:
 	mv ./src/machine_learning/config/* ./tensorbox/hypes/
 	cd tensorbox
 	python evaluate.py --weights data/save.ckpt-180000 --test_boxes data/testing_set.json
+	
+Below is a solution for a potential error that might come up during TensorBox installation. The commands should be executed inside the `virtualenv`:
+
+1. **Error:** pkg-config python not found
+
+   **Solution for macOS:** 
+   
+   `export PKG_CONFIG_PATH=/System/Library/Frameworks/Python.framework/Versions/2.7/lib/pkgconfig/; echo $(pkg-config --			variable pc_path pkg-config)${PKG_CONFIG_PATH:+:}${PKG_CONFIG_PATH}`
