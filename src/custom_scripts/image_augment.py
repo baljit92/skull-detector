@@ -183,7 +183,7 @@ def main(argv):
 					img = transform_image(image,0,brightness=1)
 					im = Image.fromarray(img)
 					
-					#generate only 5 augmented versions with big variations in the image
+					#generate only 4 augmented versions with big variations in the image
 					if i%5:
 						im.save(output_img_directory+"/"+file_name+"_"+str(i)+"."+file_ext)
 						image_new = file_name+"_"+str(i)+"."+file_ext

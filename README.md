@@ -28,6 +28,7 @@ The following pre-requisites need to be satisified for the project to run:
 * Python 2.7
 * Django 1.11.2
 * pip
+* Pillow 4.1.1
 
 Following commands can be used to install Django on both macOS and Unix machines:
 ```
@@ -60,7 +61,7 @@ After downloading the dataset csv file from the webapp; use the script `convert_
 ## Description
 
 Once we have the training data and the validation data, use *TensorBox* to train a machine learning model. A trained model has
-already been provided with the name of _save.ckpt-180000_
+already been provided with the name of _save.ckpt-18000_
 
 ## Pre-requisites
 The following pre-requisites need to be satisified for the machine learning project to run:
@@ -87,15 +88,19 @@ To setup TensorBox and evaluate the model, follow instructions below:
 	mv ./src/machine_learning/data/* ./tensorbox/data/
 	mv ./src/machine_learning/config/* ./tensorbox/hypes/
 	cd tensorbox
-	python evaluate.py --weights data/save.ckpt-180000 --test_boxes data/testing_set.json
-	```
+	python evaluate.py --weights data/save.ckpt-18000 --test_boxes data/testing_set.json
+
+
+The evaluated image results are saved under `data/images_testing_set_18000`. 
+
 
 Below is a solution for a potential error that might come up during TensorBox installation. The commands should be executed inside the `virtualenv`:
 
-2. **Error:** pkg-config python not found
+1. **Error:** pkg-config python not found
+   
    **Solution for macOS:** export PKG_CONFIG_PATH=/System/Library/Frameworks/Python.framework/Versions/2.7/lib/pkgconfig/; echo $(pkg-config --variable pc_path pkg-config)${PKG_CONFIG_PATH:+:}${PKG_CONFIG_PATH}
 
-_Note: In order to use a custom training dataset, the files should be placed under the folder 'tensorbox/data' and modify the fields training and testing fields in `tensorbox/hypes/overfeat_rezoom.js`_
+_Note: In order to use a custom training dataset, the training and validation files should be placed under 'tensorbox/data' and modify the fields training and testing fields in `tensorbox/hypes/overfeat_rezoom.js`_
 
 ## The Dataset
 The images used for this project have all been taken from the web. The images are of human skulls, non human skulls and various other objects such as people, cartoon characters, etc. After the completion of data collection, every image was passed through
@@ -107,7 +112,9 @@ the web app developed in the first phase.  The image metadata is then saved in a
 
 ## Results
 
-Full testing output fromm the trainined model can be found under `results/`. In the images, the green boxes are the final predictions after merging, and red are all predictions after applying a threshold of confidence, but before merging.
+Full testing output from the trained model can be found under `results/`. In the images, the green boxes are the final predictions after merging, and red are all predictions after applying a threshold of confidence, but before merging.
+
+For the test dataset used, average accuracy was 90%.
 
 #### Positive Images
 Below are some positive images that were classified correctly. Most of the positively classified images, as below, are images that contain a standalone skull whereas some of them also contain noise in the background.
@@ -118,7 +125,7 @@ Below are some positive images that were classified correctly. Most of the posit
 Most of the negative images were classified correctly, however as we can see below, some of the negative images that were positively classified contain backgorunds, skeletons, faces or facial-like features such as eyes. The trained model drew bounding boxes around random objects in addition to the human skull (if present). 
 
 
-For the test dataset used, average accuracy was 90%
+
 
 ## Discussion
 
@@ -159,6 +166,8 @@ Couple of points:
 
 1. Use ResNet. TensorBox contains ResNet that we could use for much deeper learning with more resources.
 2. Training on a much larger data set that includes more negative class than positives and images with different resolutions.
-3. Use more variations of image augmentations such as shearing, rotation to increase the accuracy.
-4. For web app, use outlier detection to prevent spam in the training set
-5. For web app, fix canvas drawing for large resolution images
+3. Train the model for more epochs
+4. Use more variations of image augmentations such as shearing, rotation to increase the accuracy.
+5. For web app, use outlier detection to prevent spam in the training set
+6. For web app, fix canvas drawing for large resolution images
+
