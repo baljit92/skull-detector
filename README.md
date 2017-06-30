@@ -1,21 +1,26 @@
-# !Skull detection in images!
+# Skull detection in images
 
 # Web app to annotate/label images
 
 ## Description
 
-The web app let's the user annotate images by drawing a red color bounding box around the skulls in the image. The user can label the image with *Skull* or *Not Skull* class.
+The web app let's the user annotate images by drawing a bounding box around the skulls in the image. The user can label the image with *Skull* or *Not Skull* class.
 
-Once the user clicks the Save button; the metadata of the annotated image such as `(image_name, [[x0, y0, x1, y1, width, height]], class)` is stored in a csv file. 
+![Web app](/results/misc/webapp_shot.png)
+Once the user clicks the Save button; the metadata of the annotated image is stored in a csv file. The metadata consists of
 
-The csv file gets downloaded when the user downloads the training images.
-
-Non-Maximum Suppression(NSM) support has been added to combine multiple bounding boxes for an image. This helps in suppressing all the image information and displaing only the essential bounding boxes.
-
-No annotated images are stored in any directory. Whenever the user wants to view/download the training images; we make use of the coordinates present in the .csv to draw the bounding box on the fly. Users can view/download the training images both with NSM and without NSM.
+Field | Description
+------| -----------
+Image name | The name of the image file without the path
+Bounding box | The coordinates of the box (top-left coordinates, bottom right coordinates, width, height)
+Image class | The clss to which the image belongs
 
 Non-Maximum Suppression support has been added to combine multiple bounding boxes for an image. This helps in suppressing all the image information and displaying
-only the essential bounding boxes. 
+only the essential bounding boxes. This is helpful when multiple users draw bounding boxes on one image. 
+
+Whenever the user wants to view/download the training images; we make use of the coordinates present in the .csv to draw the bounding box on the fly.
+Users can view/download the training images both with and without NMS. The csv file gets downloaded when the user downloads the training images.
+Once we have the dataset, we manually separate 20% of the data for validation and keep the 80% for training.
 
 
 ## Instructions to run
@@ -45,7 +50,7 @@ Two scripts have ben provided in `src/custom_scripts` :
 1) `convert_csv_to_json.py` which converts the .csv file downloaded from the web app to JSON format accepted by TensorBox
 2) `image-augment.py` used to generate augmentated versions of a single training/annotated image. Over here; we first
 draw bounding box in the area of interest in an image and then use this script to generate an augmented version of the 
-image. Of course, it is made sure that the image is not rotated to avoid any rectangle coordinate issues. 
+image. All the transformations we use preserve the bounding box in the images.
 
 After downloading the dataset csv file from the webapp; use the script `convert_csv_to_json.py` so that it can be used with TensorBox.
 
@@ -94,9 +99,7 @@ _Note: In order to use a custom training dataset, the files should be placed und
 
 ## The Dataset
 The images used for this project have all been taken from the web. The images are of human skulls, non human skulls and various other objects such as people, cartoon characters, etc. After the completion of data collection, every image was passed through
-the web app developed in the first phase.  The image metadata is then saved in a .csv file which will be used as a training the model. The metadata is in the format `(image_name, [x0,y0,x1,y1,w,h], image_class)`. 
-
-For every image, we have created five augmented versions so as to provide variations in the dataset. 
+the web app developed in the first phase.  The image metadata is then saved in a .csv file which will be used as a training the model. We also used a script to generate 4-5 augmentated versions of the images so s to provide variations in the dataset.
 
 * For every **positive image** (human skulls), the image was labeled with class 'Skull` and annotated by drawing bounding box(es) around every skull in an image.
 
@@ -104,7 +107,7 @@ For every image, we have created five augmented versions so as to provide variat
 
 ## Results
 
-Full testing output fromm the trainined model can be found under `results/`. In the images, the green boxes are the final predictions after merging, and red are all predictions after applying a threshold, but before merging.
+Full testing output fromm the trainined model can be found under `results/`. In the images, the green boxes are the final predictions after merging, and red are all predictions after applying a threshold of confidence, but before merging.
 
 #### Positive Images
 Below are some positive images that were classified correctly. Most of the positively classified images, as below, are images that contain a standalone skull whereas some of them also contain noise in the background.
@@ -123,25 +126,24 @@ For the test dataset used, average accuracy was 90%
 We used TensorBox for this project. TensorBox is a new framework that is used for training models to detect
 objects in images. TensorBox is based on TensorFlow. 
 
-The training image set in our case is very small. We were only able to collect and annotate around 1200 skull images due to time limitations. 
+The training image set in our case is very small. We were only able to collect and annotate around 1350(including augmented versions) skull images due to time limitations. 
 
 #### Describe your pipeline and pre-processing steps
 The dataset consists of images of human skulls, animal skulls, cartoon faces, human faces, random objects and surroundings. 
 Each of the image was labelled and annotated manually using the Annotate webapp. A positive image was annotated with bounding box(es) around areas of skull(s). 
 
-* The training set consistsed of 1780 images with 1000 annotated images
-* The validation set consisted of 440 images with 296 annotated images
-* The testing set consisted of 78 images with 54 annotated images
+* The training set consistsed of 1780 images with 1000 positive images
+* The validation set consisted of 440 images with 296 positive images
+* The testing set consisted of 78 images with 54 positive images
 
 We used a split of 80/20 training/validation to train the model.
 
 ##### Training pipeline
-1. Capture the training and validation data files and give it to TensorBox as a training and testing file.
-2. TensorBox runs with a gap of 50 steps. At each step, a batch of images are used to train the model.
-3. The model training is completed after passing over the entire dataset 9 times.
+1. Prepare the training and validation data files using the webapp
+2. Using the dataset, we train the model for 9 epochs
 
 ##### Testing pipeline
-1. Capture the testing data and evaluate it using the model trained by TensorBox. 
+1. Prepare the testing data and evaluate it using the model trained by TensorBox. 
 2. Once evaluated, TensorBox draws bounding boxes around the areas of interest in the testing image set and saves these images
 in an `output/` folder. 
 3. Use _Non Maximal Suppression_ to draw a combined bounding box around the areas of interest.
