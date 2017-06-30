@@ -13,6 +13,7 @@ from PIL import Image
 import csv
 import ast
 
+Image.Image.tostring = Image.Image.tobytes
 
 def parse(ifile, ofile):
 	'''
@@ -104,7 +105,7 @@ def main(argv):
 				output_img_directory = arg
 	else:
 		print 'image_augment.py -i <training_csv_file> -o <output_csv_file> -I <input_img_directory>  -O <out_img_directory>'
-		sys.exit2()
+		sys.exit(2)
 
 	if not parse(inputfile, outputfile):
 		print "Please enter valid CSV file(s)"
