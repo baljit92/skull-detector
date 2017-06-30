@@ -58,7 +58,7 @@ Once we have the training data and the validation data, use *TensorBox* to train
 already been provided with the name of _save.ckpt-180000_
 
 ## Pre-requisites
-The following pre-requisites need to be satisified for the project to run:
+The following pre-requisites need to be satisified for the machine learning project to run:
 * Python 2.7
 * TensorBox
 * OpenCV
