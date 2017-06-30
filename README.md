@@ -1,4 +1,4 @@
-# Skull detection in images
+# !Skull detection in images!
 
 # Web app to annotate/label images
 
@@ -24,7 +24,7 @@ The following pre-requisites need to be satisified for the project to run:
 * Django 1.11.2
 * pip
 
-Following commands can be used to install Django on both macOs and Unix machines:
+Following commands can be used to install Django on both macOS and Unix machines:
 ```
 pip install Django==1.11.2
 pip install Pillow
@@ -69,7 +69,8 @@ The following pre-requisites need to be satisified for the machine learning proj
 
 ## Instructions to run
 To setup TensorBox and evaluate the model, follow instructions below: 
-	```
+	
+	
 	git clone https://github.com/saifrahmed/HiringExercise_MLEngineer_Baljit92.git
 	cd HiringExercise_MLEngineer_Baljit92
 	chmod +x *.sh
@@ -86,8 +87,8 @@ To setup TensorBox and evaluate the model, follow instructions below:
 
 Below is a solution for a potential error that might come up during TensorBox installation. The commands should be executed inside the `virtualenv`:
 
-2. *Error:* pkg-config python not found
-   *Solution for macOS:* export PKG_CONFIG_PATH=/System/Library/Frameworks/Python.framework/Versions/2.7/lib/pkgconfig/; echo $(pkg-config --variable pc_path pkg-config)${PKG_CONFIG_PATH:+:}${PKG_CONFIG_PATH}
+2. **Error:** pkg-config python not found
+   **Solution for macOS:** export PKG_CONFIG_PATH=/System/Library/Frameworks/Python.framework/Versions/2.7/lib/pkgconfig/; echo $(pkg-config --variable pc_path pkg-config)${PKG_CONFIG_PATH:+:}${PKG_CONFIG_PATH}
 
 _Note: In order to use a custom training dataset, the files should be placed under the folder 'tensorbox/data' and modify the fields training and testing fields in `tensorbox/hypes/overfeat_rezoom.js`_
 
@@ -107,9 +108,12 @@ Full testing output fromm the trainined model can be found under `results/`. In 
 
 #### Positive Images
 Below are some positive images that were classified correctly. Most of the positively classified images, as below, are images that contain a standalone skull whereas some of them also contain noise in the background.
+![Positive images](/results/misc/good_results.png)
 
+![Negative images](/results/misc/positive_negatve_results.png)
 #### Negative Images
 Most of the negative images were classified correctly, however as we can see below, some of the negative images that were positively classified contain backgorunds, skeletons, faces or facial-like features such as eyes. The trained model drew bounding boxes around random objects in addition to the human skull (if present). 
+
 
 For the test dataset used, average accuracy was 90%
 
