@@ -87,17 +87,27 @@ def prepareArrayNMS(filename):
 				# preparing tuples
 				for i in range(0,num_rects):
 
-					x0 = math.isnan(float(data['bounding_box'][(6*i)+0]))
-					y0 = math.isnan(float(data['bounding_box'][(6*i)+1]))
-					x1 = math.isnan(float(data['bounding_box'][(6*i)+2]))
-					y1 = math.isnan(float(data['bounding_box'][(6*i)+3]))
-
-					if not x0 and not x1 and not y0 and not y1:
-						temp_tuple = (float(data['bounding_box'][(6*i)+0]), float(data['bounding_box'][(6*i)+1]), float(data['bounding_box'][(6*i)+2]), float(data['bounding_box'][(6*i)+3]))
-						box_coords.append(temp_tuple)
+					x0_str = len(data['bounding_box'][(6*i)+0])
+					y0_str = len(data['bounding_box'][(6*i)+1])
+					x1_str = len(data['bounding_box'][(6*i)+2])
+					y1_str = len(data['bounding_box'][(6*i)+0])
 					
-						area = (float(data['bounding_box'][(6*i)+2]) - float(data['bounding_box'][(6*i)+0])) * (float(data['bounding_box'][(6*i)+3]) - float(data['bounding_box'][(6*i)+1]))
-						box_area.append(area)
+					if x0_str > 0 and y0_str > 0 and x1_str > 0 and y1_str > 0:
+						x0 = math.isnan(float(data['bounding_box'][(6*i)+0]))
+						y0 = math.isnan(float(data['bounding_box'][(6*i)+1]))
+						x1 = math.isnan(float(data['bounding_box'][(6*i)+2]))
+						y1 = math.isnan(float(data['bounding_box'][(6*i)+3]))
+
+						if not x0 and not x1 and not y0 and not y1:
+							temp_tuple = (float(data['bounding_box'][(6*i)+0]), float(data['bounding_box'][(6*i)+1]), float(data['bounding_box'][(6*i)+2]), float(data['bounding_box'][(6*i)+3]))
+							box_coords.append(temp_tuple)
+						
+							area = (float(data['bounding_box'][(6*i)+2]) - float(data['bounding_box'][(6*i)+0])) * (float(data['bounding_box'][(6*i)+3]) - float(data['bounding_box'][(6*i)+1]))
+							box_area.append(area)
+						else:
+							box_area = []
+							box_coords = []
+							continue
 					else:
 						box_area = []
 						box_coords = []

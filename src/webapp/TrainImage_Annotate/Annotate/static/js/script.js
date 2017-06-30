@@ -36,7 +36,7 @@ function nextBtnInit()
 	$("#next").click(function() 
 	{		
 		currentImageIndex = parseInt($('#image_index').val())
-
+		clearCanvas()
 		nextImage = (currentImageIndex + 1) % images.length;
 		currentImageIndex = nextImage;
 
@@ -66,8 +66,6 @@ function nextBtnInit()
 	{
 		window.location.href = "/draw/download";
 	});
-
-
 	
 }
 
@@ -197,14 +195,6 @@ function mouseUp(e)
 	rect.endingX = e.pageX - (this.offsetLeft+offsetLeftAdd);
 	rect.endingY = e.pageY - (this.offsetTop+offsetTopAdd);
 	
-
-	console.log("Being");
-	console.log("Starting X:", rect.startX);
-	console.log("Starting Y:", rect.startY);
-	console.log("Ending X:", rect.endingX);
-	console.log("Ending X:", rect.endingY);
-	console.log("Height:", rect.h);
-	
 	if((rect.startX > rect.endingX) && (rect.startY > rect.endingY))
 	{
 		rect.startX = rect.endingX;
@@ -223,12 +213,7 @@ function mouseUp(e)
 	{
 		rect.startX = rect.startX + rect.w;
 	}
-	// console.log("After everything");
-	// console.log("Starting X:", rect.startX);
-	// console.log("Starting Y:", rect.startY);
-	// console.log("Ending X:", rect.endingX);
-	// console.log("Ending X:", rect.endingY);
-	// console.log("Height:", rect.h);
+	
 	var tempRectTuple = []
 	// top-left
 	tempRectTuple.push(rect.startX);
@@ -240,8 +225,8 @@ function mouseUp(e)
 	tempRectTuple.push(Math.abs(rect.w));
 	//height
 	tempRectTuple.push(Math.abs(rect.h));
-	console.log("temprect:", tempRectTuple);
-	//console.log(sdfs)
+
+
 	var tempStr = "["+tempRectTuple+"]";
 	rect_tuple.push(tempRectTuple)
  
