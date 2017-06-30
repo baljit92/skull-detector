@@ -93,7 +93,7 @@ To setup TensorBox and evaluate the model, follow instructions below:
 
 The evaluated image results are saved under `data/images_testing_set_18000`. 
 
-To use a custom testing dataset, add the image files to `data\images` and replace the testing_set.json with the custom test dataset. The custom dataset should have image_path field as `/images/<image_name>` and the rects field will contain the true bounding box coordinates.
+To use a custom testing dataset, add the image files to `data/images` and replace the testing_set.json with the custom test dataset. The custom dataset should have image_path field as `/images/<image_name>` and the rects field will contain the true bounding box coordinates.
 
 Below is a solution for a potential error that might come up during TensorBox installation. The commands should be executed inside the `virtualenv`:
 
