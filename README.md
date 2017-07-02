@@ -27,12 +27,18 @@ Once we have the dataset, we manually separate 20% of the data for validation an
 The following pre-requisites need to be satisified for the project to run:
 * Python 2.7
 * Django 1.11.2
-* pip
+* `pip`
+* OpenCV
 
-Following commands can be used to install Django on both macOS and Unix machines:
+For Ubuntu, install freetype before installing the required modules:
 ```
-pip install Django==1.11.2
-pip install Pillow
+sudo apt-get install libfreetype6-dev libxft-dev
+```
+Following commands can be used to install pre-reqs using `pip`:
+```
+git clone https://github.com/saifrahmed/HiringExercise_MLEngineer_Baljit92.git
+cd HiringExercise_MLEngineer_Baljit92
+pip install -r requirements.txt
 ```
 
 Once installed, follow the commands below:
@@ -71,6 +77,7 @@ The following pre-requisites need to be satisified for the machine learning proj
 * pkg-config
 * virtualenv
 * Pillow 4.1.1
+* FreeType
 
 ## Instructions to run
 To setup TensorBox and evaluate the model, follow instructions below: 
@@ -78,6 +85,7 @@ To setup TensorBox and evaluate the model, follow instructions below:
 	
 	git clone https://github.com/saifrahmed/HiringExercise_MLEngineer_Baljit92.git
 	cd HiringExercise_MLEngineer_Baljit92
+	pip install -r requirements.txt
 	chmod +x *.sh
 	./install_tensorflow.sh
 	source ./bin/activate

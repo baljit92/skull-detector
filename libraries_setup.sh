@@ -5,15 +5,16 @@ osType=$(uname)
 	case "$osType" in
 			"Darwin")
 			{
-				brew install opencv
 				brew install pkg-config
 			} ;;    
 			"Linux")
 			{
-			   sudo apt-get install python-pip python-dev python-virtualenv
+				echo "It's all good"
+				exit
 			} ;;
 			*) 
 			{
-				echo "Not supported"				
+				echo "Unsupported OS, exiting"
+				exit
 			} ;;
 	esac
