@@ -33,9 +33,10 @@ The following pre-requisites need to be satisified for the project to run:
 * Pillow 4.1.1
 
 
-For Ubuntu, install freetype before installing the required modules:
+For Ubuntu, the below files are required before installing the required modules:
 ```
 sudo apt-get install libfreetype6-dev libxft-dev
+sudo apt-get install python-tk
 ```
 Following commands can be used to install pre-reqs using `pip`:
 ```
@@ -83,6 +84,13 @@ The following pre-requisites need to be satisified for the machine learning proj
 * FreeType
 
 ## Instructions to run
+
+For Ubuntu, the below files are required before installing the required modules:
+```
+sudo apt-get install libfreetype6-dev libxft-dev
+sudo apt-get install python-tk
+```
+
 To setup TensorBox and evaluate the model, follow instructions below: 
 	
 	

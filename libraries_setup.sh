@@ -9,6 +9,7 @@ osType=$(uname)
 			} ;;    
 			"Linux")
 			{
+				sudo apt-get install pkg-config
 				echo "It's all good"
 				exit
 			} ;;
