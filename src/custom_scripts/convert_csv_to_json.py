@@ -3,7 +3,7 @@ import os
 import json
 import ast
 import sys, getopt
-
+import math
 
 def parse(ifile, ofile):
 	'''
@@ -107,9 +107,8 @@ def main(argv):
 			# create a list of dictionaries for each line
 			for line in csv_file:
 				d = {}
-				print line
 				line_split = line.split("\"")
-				
+				#print line
 				imgfile_name = img_directory+"/"+line_split[0]
 				d['image_path'] = imgfile_name[:-1]
 
@@ -117,8 +116,18 @@ def main(argv):
 					line_split[1] != "[]"
 					line_split[1] = line_split[1][1:]
 					line_split[1] = line_split[1][:-1]
+					temp_array = []
+					try:
+						temp_array = ast.literal_eval(line_split[1])
+					except SyntaxError:
+						nan_array = line_split[1].split(",")
+						for (_, arr_val) in enumerate(nan_array):
+							ele_len = len(arr_val)
+							if ele_len>0:
+								is_nan = math.isnan(float(arr_val))
+								if not is_nan:
+									temp_array.append(float(arr_val))
 
-					temp_array = ast.literal_eval(line_split[1])
 
 					#duck-typing
 					var_type = isinstance(temp_array, (list, tuple))
@@ -126,13 +135,17 @@ def main(argv):
 					rects_array = []
 
 					if var_type:
-						# list if there iis more than one rectangle
-						if type(temp_array) == type([]):
-							rects_array.append({'x1':temp_array[0], 'y1':temp_array[1], 'x2':temp_array[2], 'y2':temp_array[3]})
+						print temp_array
+						
 						# tuple if there is one rectangle
-						elif type(temp_array) == type(()):
-							for (index, _) in enumerate(temp_array):
-								coords = {'x1':temp_array[index][0], 'y1':temp_array[index][1], 'x2':temp_array[index][2], 'y2':temp_array[index][3]}
+						if type(temp_array) == type(()):
+							
+							rects_array.append({'x1':temp_array[0], 'y1':temp_array[1], 'x2':temp_array[2], 'y2':temp_array[3]})
+						# list if there is more than one rectangle
+						elif type(temp_array) == type([]):
+							num_rects = len(temp_array)/4
+							for index in range(0,num_rects):
+								coords = {'x1':temp_array[(4*index)+0], 'y1':temp_array[(4*index)+1], 'x2':temp_array[(4*index)+2], 'y2':temp_array[(4*index)+3]}
 								rects_array.append(coords)
 					d['rects'] = rects_array
 					 
