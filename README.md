@@ -2,7 +2,7 @@
 
 # Web app to annotate/label images
 
-## Instructions to run
+## Basic setup instructions
 The following pre-requisites need to be satisified for the project to run:
 * Python 2.7
 * Django 1.11.2
@@ -22,11 +22,11 @@ sudo apt-get install python-tk
 ```
 Following commands can be used to install pre-reqs using `pip`:
 ```
-	git clone https://github.com/saifrahmed/HiringExercise_MLEngineer_Baljit92.git
-	cd HiringExercise_MLEngineer_Baljit92
-	chmod +x *.sh
-	./setup_virtualenv.sh
-	source ./bin/activate
+git clone https://github.com/baljit92/skull-detector.git
+cd skull-detector
+chmod +x *.sh
+./setup_virtualenv.sh
+source ./bin/activate
 ```
 
 
@@ -43,7 +43,7 @@ Image name | The name of the image file without the path
 Bounding box | The coordinates of the box (top-left coordinates, bottom right coordinates, width, height)
 Image class | The clss to which the image belongs
 
-Non-Maximum Suppression support has been added to combine multiple bounding boxes for an image. This helps in suppressing all the image information and displaying
+Non-Maximal Suppression support has been added to combine multiple bounding boxes for an image. This helps in suppressing all the image information and displaying
 only the essential bounding boxes. This is helpful when multiple users draw bounding boxes on one image. 
 
 Whenever the user wants to view/download the training images; we make use of the coordinates present in the .csv to draw the bounding box on the fly.
@@ -84,13 +84,7 @@ already been provided with the name of _save.ckpt-18000_
 
 ## Instructions to run
 
-For Ubuntu, the below files are required before installing the required modules:
-```
-sudo apt-get install libfreetype6-dev libxft-dev
-sudo apt-get install python-tk
-```
-
-To setup TensorBox and evaluate the model, follow instructions below(inside virtualenv) after the requirements have been installed: 
+To setup TensorBox and evaluate the model, after completing the basic setup, follow instructions below(inside virtualenv) have been installed: 
 	
 	./libraries_setup.sh
 	./install_tensorbox.sh
