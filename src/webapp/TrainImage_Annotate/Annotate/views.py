@@ -4,12 +4,22 @@ from django.views.decorators.csrf import csrf_exempt
 import re
 import csv
 import os
+import sys 
 import zipfile
 import StringIO
 from PIL import Image, ImageDraw
 import numpy as np
 import fnmatch
 import math
+
+'''
+The path where the web_upload_eval.py file is located an
+export all the functions from the .py file
+'''
+my_file = os.path.exists(os.path.abspath("../../../tensorbox/"))
+if my_file:
+	sys.path.append(os.path.abspath("../../../tensorbox/"))
+	from web_upload_eval import *
 
 def prepareArrayNMS(filename):
 	
@@ -226,6 +236,51 @@ def non_max_suppression_slow(boxes, overlapThresh, areas=None):
 
 	# return only the bounding boxes that were picked
 	return boxes[pick].astype("int"), pick
+
+
+@csrf_exempt
+def modelTest(request):
+	return render(request, 'download.html', {'evalBool':False})
+
+@csrf_exempt
+def imgEval(request):
+
+	'''
+
+	check if the form request made is a POST request; if it is POST
+	request, get the uploaded image data and the image file name and 
+	upload it for evaluation with the ML model
+	'''
+	if request.method == 'POST':
+		handle_uploaded_file(request.FILES['pic'], str(request.FILES['pic']))
+		check_main()
+		return render(request, 'download.html', {'evalBool':True})
+	return render(request, 'download.html', {'evalBool':False})
+
+def handle_uploaded_file(file, filename):
+
+	'''
+	The image that is to be evaluated using the model is saved 
+	with the name of 'image_test.jpeg' for easy finding and processing
+	of file by the evaluation file
+	'''
+	# create media_1 folder if it does not exist
+	if not os.path.exists('Annotate/static/media_1/'):
+		os.mkdir('Annotate/static/media_1/')
+ 	# save te uploaded image to media_1 flder
+	with open('Annotate/static/media_1/image_test.jpeg', 'wb+') as destination:
+		for chunk in file.chunks():
+			destination.write(chunk)
+
+	# the path from where the model will take the input image
+	if not os.path.exists('uploadFils/'):
+		os.mkdir('uploadFils/')
+ 
+	with open('uploadFils/image_test.jpeg', 'wb+') as destination:
+		for chunk in file.chunks():
+			destination.write(chunk)
+
+
 
 
 

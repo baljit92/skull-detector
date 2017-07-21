@@ -10,4 +10,6 @@ urlpatterns = [
 	url(r'^download/$', views.downloadImgs, name='downloadAnnotImages'),
 	url(r'^downloadNMS/$', views.downloadImgsNMS, name='downloadAnnotImages'),
 	url(r'^downloadall/$', views.downloadAll, name='downloadAllImages'),
+	url(r'^modelTest/$', views.modelTest, name='modelTest'),
+	url(r'^imageEval/$', views.imgEval, name='evalImg'),
 ]

@@ -9,17 +9,114 @@
 
 	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 	<script src="/static/js/script.js"></script>
-
+	<link rel="stylesheet" href="/static/css/style.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
 </head>
 
-<!-- initialize the canvas with the image on body load -->
-<body >
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="col-sm-6 col-sm-offset-4">
+				<h2> Skull Detection Tool</h2>
+				<div>
+				 	<div id="uploaderForm">
+						<form enctype="multipart/form-data" action="{% url 'evalImg' %}" method="post">
+							<input type="file" id="upload_img" name="pic" accept="image/*" capture style="display:none"/>
+							
+							<div class="row">
+								<div class="col-sm-6 col-sm-offset-2">
+									<i id="upfile1" class="material-icons" style="cursor:pointer; 
+									color:rgba(128, 128, 128, 0.77); font-size: 65px">cloud_upload</i>
+								</div>
+							</div>
+						</form>
+					
+						<div class="row">
+							<div class="col-sm-6 col-sm-offset-0" >
 
-<div>
-	 <p> Hello </p>
-    
-</div>
+							<img id="blah" alt="your image"  style="display: inline; padding: 10px; border: 3px solid rgba(128,128,128,0.2);">
+							<br>
+							<br>
+							<div class="row">
+								<div class="col-sm-6 col-sm-offset-0" style="margin-left:105px">
+									<div id="loading"><img src="/static/img/ring-alt.gif" width="50" height="50"/></div>
+								</div>
+							</div>
 
-
+							<div class="row">
+								<div class="col-sm-6 col-sm-offset-4">
+									<div class="uploaderItem" id="uploaderSubmit">
+										<a href="#" onclick="addImage();">Process Image</a></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </body>
+
+<script>
+
+var myJSVar = "{{ evalBool|safe }}";
+
+if(myJSVar == "False")
+{
+	$('#blah').css( "max-width", '300px' );
+ 	$('#blah').css( "max-height", '300px' );
+	$("#blah").hide();
+	$("#blah_title").hide();
+	$("#uploaderSubmit").hide();
+	$("#loading").hide();
+}
+else
+{
+	$("#blah").show();
+ 	$('#blah').css( "max-width", '300px' );
+ 	$('#blah').css( "max-height", '300px' );
+	$('#blah').attr('src', '/static/media_1/imageTest.jpeg');
+	$("#uploaderSubmit").hide();
+	$("#loading").hide();
+
+}
+
+function readURL(input) {
+
+	if (input.files && input.files[0]) {
+		var reader = new FileReader();
+
+		reader.onload = function (e) {
+			$('#blah').attr('src', e.target.result);
+			$("#blah").show()
+			$("#blah_title").show();
+			$("#uploaderSubmit").show();
+		}
+
+		reader.readAsDataURL(input.files[0]);
+	}
+}
+
+$("#upload_img").change(function(){
+	readURL(this);
+});
+
+function addImage()
+{   
+	$("#blah").hide();
+	$("#loading").show();
+	$("#uploaderSubmit").hide();
+	$('#uploaderForm > form').submit()
+
+}
+
+$("#upfile1").click(function () {
+    $("#upload_img").trigger('click');
+});
+
+</script>
 </html>

@@ -108,8 +108,13 @@ To setup TensorBox and evaluate the model, follow instructions below:
 	cd tensorbox
 	python evaluate.py --weights data/save.ckpt-18000 --test_boxes data/testing_set.json
 
-
 The evaluated image results are saved under `data/images_testing_set_18000`. 
+
+
+To evaluate a custom image by uploading it from the desktop:
+	mv web_upload_eval.py ./tensorbox
+
+Go to the browser and type in `localhost:8000/draw/modelTest` 
 
 To use a custom testing dataset, add the image files to `data/images` and replace the testing_set.json with the custom test dataset. The custom dataset should have image_path field as `/images/<image_name>` and the rects field will contain the true bounding box coordinates.
 
