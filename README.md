@@ -61,6 +61,7 @@ Two scripts have ben provided in `src/custom_scripts` :
 2) `image-augment.py` used to generate augmentated versions of a single training/annotated image. Over here; we first
 draw bounding box in the area of interest in an image and then use this script to generate an augmented version of the 
 image. All the transformations we use preserve the bounding box in the images.
+3) `convertToRGB.py` which converts different image formats to `.jpeg`. This is important since Tensorbox cannot evaluate images with formats `.png` , `.bmp`. Whenever an image format is not `.jpeg` or `jpg`; use this wrapper to convert the image to appropriate format.
 
 After downloading the dataset csv file from the webapp; use the script `convert_csv_to_json.py` so that it can be used with TensorBox.
 
@@ -69,7 +70,7 @@ After downloading the dataset csv file from the webapp; use the script `convert_
 
 ## Description
 
-Once we have the training data and the validation data, use *TensorBox* to train a machine learning model. A trained model has
+Once we have the training data and the validation data, use [TensorBox](https://github.com/TensorBox/TensorBox) to train a machine learning model. A trained model has
 already been provided with the name of _save.ckpt-18000_
 
 ## Pre-requisites
@@ -111,10 +112,11 @@ To setup TensorBox and evaluate the model, follow instructions below:
 The evaluated image results are saved under `data/images_testing_set_18000`. 
 
 
-To evaluate a custom image by uploading it from the desktop:
+To manually evaluate a custom image by uploading:
+	
 	mv web_upload_eval.py ./tensorbox
 
-Go to the browser and type in `localhost:8000/draw/modelTest` 
+After moving the above file, go to the browser and type in `localhost:8000/draw/modelTest` 
 
 To use a custom testing dataset, add the image files to `data/images` and replace the testing_set.json with the custom test dataset. The custom dataset should have image_path field as `/images/<image_name>` and the rects field will contain the true bounding box coordinates.
 
