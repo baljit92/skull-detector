@@ -1,7 +1,5 @@
 # Skull detection in images
 
-# Web app to annotate/label images
-
 ## Basic setup instructions
 The following pre-requisites need to be satisified for the project to run:
 * Python 2.7
@@ -29,6 +27,9 @@ chmod +x *.sh
 source ./bin/activate
 ```
 
+
+
+# Web app to annotate/label images
 
 ## Description
 
