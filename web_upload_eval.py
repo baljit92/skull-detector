@@ -16,7 +16,7 @@ abs_path_model = os.path.abspath('../../../tensorbox/data')
 def get_image_dir():
     weights_iteration = int(os.path.abspath(abs_path_model+abs_path_model+'/save.ckpt-18000').split('-')[-1])
     expname = '_'
-    image_dir = '%s/images_%s_%d%s' % (os.path.dirname(abs_path_model+'/save.ckpt-18000'), os.path.basename(abs_path_model+'/testing_set_present.json')[:-5], weights_iteration, expname)
+    image_dir = '%s/images_%s_%d%s' % (os.path.dirname(abs_path_model+'/save.ckpt-18000'), os.path.basename(abs_path_model+'/custom_image_testing_set.json')[:-5], weights_iteration, expname)
     return image_dir
 
 def get_results(H):
@@ -37,8 +37,8 @@ def get_results(H):
 
         pred_annolist = al.AnnoList()
 
-        true_annolist = al.parse(abs_path_model+'/testing_set_present.json')
-        data_dir = os.path.dirname(abs_path_model+'/testing_set_present.json')
+        true_annolist = al.parse(abs_path_model+'/custom_image_testing_set.json')
+        data_dir = os.path.dirname(abs_path_model+'/custom_image_testing_set.json')
         image_dir = get_image_dir()
         subprocess.call('mkdir -p %s' % image_dir, shell=True)
         for i in range(len(true_annolist)):
@@ -72,8 +72,8 @@ def check_main():
     with open(hypes_file, 'r') as f:
         H = json.load(f)
     expname = '_'
-    pred_boxes = '%s.%s%s' % (abs_path_model+'/save.ckpt-18000', expname, os.path.basename(abs_path_model+'/testing_set_present.json'))
-    true_boxes = '%s.gt_%s%s' % (abs_path_model+'/save.ckpt-18000', expname, os.path.basename(abs_path_model+'/testing_set_present.json'))
+    pred_boxes = '%s.%s%s' % (abs_path_model+'/save.ckpt-18000', expname, os.path.basename(abs_path_model+'/custom_image_testing_set.json'))
+    true_boxes = '%s.gt_%s%s' % (abs_path_model+'/save.ckpt-18000', expname, os.path.basename(abs_path_model+'/custom_image_testing_set.json'))
 
 
     pred_annolist, true_annolist = get_results(H)
