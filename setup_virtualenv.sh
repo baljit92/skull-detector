@@ -27,6 +27,3 @@ virtualenv --system-site-packages .
 
 echo "Activate the viratualenv"
 source ./bin/activate
-
-echo "Installing tensorflow"
-pip install --upgrade tensorflow

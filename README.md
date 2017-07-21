@@ -2,6 +2,34 @@
 
 # Web app to annotate/label images
 
+## Instructions to run
+The following pre-requisites need to be satisified for the project to run:
+* Python 2.7
+* Django 1.11.2
+* `pip`
+* OpenCV
+* pip
+* Pillow 4.1.1
+* TensorBox
+* pkg-config
+* virtualenv
+* FreeType
+
+For Ubuntu, the below files are required before installing the required modules:
+```
+sudo apt-get install libfreetype6-dev libxft-dev
+sudo apt-get install python-tk
+```
+Following commands can be used to install pre-reqs using `pip`:
+```
+	git clone https://github.com/saifrahmed/HiringExercise_MLEngineer_Baljit92.git
+	cd HiringExercise_MLEngineer_Baljit92
+	chmod +x *.sh
+	./setup_virtualenv.sh
+	source ./bin/activate
+```
+
+
 ## Description
 
 The web app let's the user annotate images by drawing a bounding box around the skulls in the image. The user can label the image with *Skull* or *Not Skull* class.
@@ -24,28 +52,8 @@ Once we have the dataset, we manually separate 20% of the data for validation an
 
 
 ## Instructions to run
-The following pre-requisites need to be satisified for the project to run:
-* Python 2.7
-* Django 1.11.2
-* `pip`
-* OpenCV
-* pip
-* Pillow 4.1.1
 
-
-For Ubuntu, the below files are required before installing the required modules:
-```
-sudo apt-get install libfreetype6-dev libxft-dev
-sudo apt-get install python-tk
-```
-Following commands can be used to install pre-reqs using `pip`:
-```
-git clone https://github.com/saifrahmed/HiringExercise_MLEngineer_Baljit92.git
-cd HiringExercise_MLEngineer_Baljit92
-pip install -r requirements.txt
-```
-
-Once installed, follow the commands below:
+Once the requirements have been installed, follow the commands below to run the server:
 ```
 cd src/webapp/TrainImage_Annotate/
 python manage.py runserver
@@ -73,16 +81,6 @@ After downloading the dataset csv file from the webapp; use the script `convert_
 Once we have the training data and the validation data, use [TensorBox](https://github.com/TensorBox/TensorBox) to train a machine learning model. A trained model has
 already been provided with the name of _save.ckpt-18000_
 
-## Pre-requisites
-The following pre-requisites need to be satisified for the machine learning project to run:
-* Python 2.7
-* TensorBox
-* OpenCV
-* pip
-* pkg-config
-* virtualenv
-* Pillow 4.1.1
-* FreeType
 
 ## Instructions to run
 
@@ -92,15 +90,8 @@ sudo apt-get install libfreetype6-dev libxft-dev
 sudo apt-get install python-tk
 ```
 
-To setup TensorBox and evaluate the model, follow instructions below: 
+To setup TensorBox and evaluate the model, follow instructions below(inside virtualenv) after the requirements have been installed: 
 	
-	
-	git clone https://github.com/saifrahmed/HiringExercise_MLEngineer_Baljit92.git
-	cd HiringExercise_MLEngineer_Baljit92
-	pip install -r requirements.txt
-	chmod +x *.sh
-	./install_tensorflow.sh
-	source ./bin/activate
 	./libraries_setup.sh
 	./install_tensorbox.sh
 	mv ./src/machine_learning/model/* ./tensorbox/data/

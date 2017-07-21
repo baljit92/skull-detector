@@ -39,3 +39,8 @@ a:hover
 {
 	margin-top: 100px;
 }
+
+.imgContainer{
+    float:left;
+}
+
