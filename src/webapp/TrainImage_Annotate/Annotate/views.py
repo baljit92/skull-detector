@@ -253,6 +253,7 @@ def imgEval(request):
 	'''
 	if request.method == 'POST':
 		handle_uploaded_file(request.FILES['pic'], str(request.FILES['pic']))
+		# main function in web_upload_eval.py file
 		check_main()
 		return render(request, 'download.html', {'evalBool':True})
 	return render(request, 'download.html', {'evalBool':False})
